@@ -1,0 +1,87 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace CaptureKinectStream
+{
+    public partial class CaptureControlGUI : Form
+    {
+        private bool currentlyRecording = false;
+
+        private String saveFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+        private String saveFileName = "recordedKinectDepthStream.kcs";
+
+        private CapturingController captureController;
+
+        private int recordingDuration = 0;
+
+        public CaptureControlGUI(CapturingController captureController)
+        {
+            InitializeComponent();
+
+            currentFolderLabel.Text = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+            this.captureController = captureController;
+        }
+
+        private void recordingToggle_Click(object sender, EventArgs e)
+        {
+            if (!currentlyRecording)
+            {
+                recordingToggle.Text = "Stop Recording";
+                captureController.startCapturing(saveFolderPath + "//" + saveFileName, recordingDuration);
+            }
+            else
+            {
+                recordingToggle.Text = "Start Recording";
+                captureController.stopCapturing();
+            }
+
+            currentlyRecording = !currentlyRecording;
+        }
+
+        private void chooseFolder_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog saveFolderBrowser = new FolderBrowserDialog();
+
+            saveFolderBrowser.RootFolder = Environment.SpecialFolder.Desktop;
+
+            if (saveFolderBrowser.ShowDialog() == DialogResult.OK)
+            {
+                saveFolderPath = saveFolderBrowser.SelectedPath;
+                folderLabel.Text = saveFolderPath;
+            }
+
+        }
+
+        private void fileName_TextChanged(object sender, EventArgs e)
+        {
+            if (fileName.Text.Length == 0)
+            {
+                saveFileName = "recordedKinectDepthStream.kcs";
+            }
+            else if (fileName.Text.Length >= 5 && fileName.Text.EndsWith(".kcs"))
+            {
+                saveFileName = fileName.Text;
+            }
+            else
+            {
+                saveFileName = fileName.Text + ".kcs";
+            }
+
+            fileName.Text = saveFileName;
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            recordingDuration = (int)numericUpDown1.Value;
+        }
+    }
+}
