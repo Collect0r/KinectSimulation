@@ -56,7 +56,7 @@ namespace CaptureKinectStream
             Console.WriteLine("STOPPED");
 
             // gets also called in real code??? think nope
-            depthFrameReader.Dispose();
+            //depthFrameReader.Dispose();
         }
 
         private void depthDataReadyEventHandler(object sender, DepthFrameArrivedEventArgs e)

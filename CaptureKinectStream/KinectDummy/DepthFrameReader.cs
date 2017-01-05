@@ -21,15 +21,20 @@ namespace KinectDummy
         public BinaryReader streamReader;
 
         private String savedStreamFilePath;
-        private bool savedStreamFileSet = false;
-        private bool sensorOpened = false;
 
         //private ConcurrentQueue<ushort[]> concQueue = new ConcurrentQueue<ushort[]>();
         private ConcurrentQueue<Tuple<long,ushort[]>> concurrentReadingQueue = new ConcurrentQueue<Tuple<long, ushort[]>>();
-        private bool pauseStreaming = false; // set to true if the queue has to buffer before being able to stream or if the bounds/currentPosition has been changed in the GUI and the queue has to be cleared up
-        private bool queueAccessable = false; // gets set to true at the next frame-kick after 'pauseStreaming' was set to true
+        private bool pauseReadingRequested = false;
+        private bool pauseStreamingRequested = false;
         private bool currentlyReading = false;
-        private bool readStopRequested = false;
+        private bool currentlyStreaming = false;
+        private bool initiallyStarted = false;
+        private bool savedStreamFileSet = false;
+        private bool sensorOpened = false;
+        //private bool pauseStreaming = false; // set to true if the queue has to buffer before being able to stream or if the bounds/currentPosition has been changed in the GUI and the queue has to be cleared up
+        //private bool queueAccessable = false; // gets set to true at the next frame-kick after 'pauseStreaming' was set to true
+        //private bool currentlyReading = false;
+        //private bool readStopRequested = false;
 
         public static List<int> performanceTestList = new List<int>(400);
 
@@ -75,21 +80,60 @@ namespace KinectDummy
 
         public void setRepeatingInterval(long lowerBoundMS, long upperBoundMS)
         {
-            long tempLowerboundByeOffset = transformMillisecondsToBytes(lowerBoundMS);
-            long tempUpperboundByeOffset = transformMillisecondsToBytes(upperBoundMS);
-            cleanUpQueue(tempLowerboundByeOffset, tempUpperboundByeOffset);
+            if (!initiallyStarted)
+                return;
+
+            requestFullQueueAccess(); // may freeze everything??
+            
+            Tuple<long, ushort[]> tempPosition;
+            bool success = concurrentReadingQueue.TryDequeue(out tempPosition);
+            if (success)
+                streamReader.BaseStream.Position = tempPosition.Item1;
+
+            cleanUpQueue();
 
             lowerBoundByteOffset = transformMillisecondsToBytes(lowerBoundMS);
             upperBoundByteOffset = transformMillisecondsToBytes(upperBoundMS);
+
+            pauseReadingRequested = false;
+            pauseStreamingRequested = false;
+        }
+
+        public void setTimelinePosition(long currentMS)
+        {
+            if (!initiallyStarted)
+                return;
+
+            requestFullQueueAccess(); // may freeze everything??
+
+            cleanUpQueue();
+
+            streamReader.BaseStream.Position = transformMillisecondsToBytes(currentMS);
+            streamReader.BaseStream.Flush();
+            
+            pauseReadingRequested = false;
+            pauseStreamingRequested = false;
         }
 
         private void requestFullQueueAccess()
         {
-            pauseStreaming = true;
-            pauseReading = true;
-            
+            pauseReadingRequested = true;
+            pauseStreamingRequested = true;
 
+            while (!currentlyReading || !currentlyStreaming)
+            {
+                new ManualResetEvent(false).WaitOne(10);
+            }
+        }
 
+        private void cleanUpQueue()
+        {
+            Tuple<long, ushort[]> dummy;
+
+            while (!concurrentReadingQueue.IsEmpty)
+            {
+                concurrentReadingQueue.TryDequeue(out dummy);
+            }
         }
         
         public long getLowerBoundMilliseconds()
@@ -114,8 +158,8 @@ namespace KinectDummy
             if (frameArrivedTimer.IsRunning)
                 frameArrivedTimer.Stop();
 
-            readStopRequested = true;
-
+            streamReader.Dispose();
+            
             using (StreamWriter fs = new StreamWriter(@"C:\\Users\\Joachim\\Desktop\\IFL\\performanceTest.txt"))
             {
                 foreach (int val in performanceTestList)
@@ -125,28 +169,29 @@ namespace KinectDummy
             }
         }
 
-        public bool startStreaming()
+        public void startStreaming()
         {
             if (savedStreamFileSet)
             {
                 startFillingQueueFromFile();
                 frameArrivedTimer.Elapsed += frameArrived;
-                return true;
+                pauseStreamingRequested = false;
+                initiallyStarted = true;
             }
-
-            return false;
         }
 
         public void pauseStreamingByGUI()
         {
             frameArrivedTimer.Elapsed -= frameArrived;
+            pauseStreamingRequested = true;
+            currentlyStreaming = false;
         }
 
-        public bool setSavedStreamFilePath(String savedStreamFilePath)
+        public void setSavedStreamFilePath(String savedStreamFilePath)
         {
-            if (savedStreamFileSet)
+            if (initiallyStarted)
             {
-                streamReader.Dispose();
+                return;
             }
 
             if (savedStreamFilePath != null && savedStreamFilePath.EndsWith(".kcs"))
@@ -154,15 +199,14 @@ namespace KinectDummy
                 streamReader = new BinaryReader(File.Open(savedStreamFilePath, FileMode.Open, FileAccess.Read));
                 fileSizeInBytes = streamReader.BaseStream.Length;
                 fileLengthMilliseconds = (long)Math.Round((float)fileSizeInBytes / (frameLengthInBytes) * (100f / 3));
+                lowerBoundByteOffset = 0;
                 upperBoundByteOffset = fileSizeInBytes;
 
                 this.savedStreamFilePath = savedStreamFilePath;
                 savedStreamFileSet = true;
-                return true;
             }
 
             savedStreamFileSet = false;
-            return false;
         }
 
         public DepthFrameReader Open()
@@ -174,9 +218,9 @@ namespace KinectDummy
 
         public void frameArrived(object sender, EventArgs e)
         {
-            if (!pauseStreaming)
+            if (!pauseStreamingRequested)
             {
-                queueAccessable = false;
+                currentlyStreaming = true;
                 frameMScounter += 33;
 
                 if (frameMScounter >= frameEveryXms)
@@ -185,7 +229,8 @@ namespace KinectDummy
 
                     bool success = concurrentReadingQueue.TryDequeue(out currentFrame);
 
-                    currentDepthFrame = new DepthFrame(currentFrame.Item2);
+                    if (success)
+                        currentDepthFrame = new DepthFrame(currentFrame.Item2);
 
                     Console.WriteLine(++counter);
 
@@ -194,10 +239,10 @@ namespace KinectDummy
                 }
             }
 
-            if (pauseStreaming)
+            if (pauseStreamingRequested)
             {
                 Console.WriteLine("Steraming was paused due to buffering or cleaning up the queue. Occurs when changes are made in the GUI while running.");
-                queueAccessable = true;
+                currentlyStreaming = false;
             }
         }
 
@@ -208,14 +253,12 @@ namespace KinectDummy
 
         public void startFillingQueueFromFile()
         {
-            if (currentlyReading)
+            if (initiallyStarted)
             {
                 Console.WriteLine("Already reading from file.");
                 return;
             }
-
-            currentlyReading = true;
-
+                
             Thread readDataThread = new Thread(fillQueueFromFileLoop);
             readDataThread.Start();
         }
@@ -224,93 +267,75 @@ namespace KinectDummy
         {
             frameArrivedTimer.Start();
 
-            while (!readStopRequested)
+            while (true)
             {
-                if (concurrentReadingQueue.Count < 100)
+                if (!pauseReadingRequested)
                 {
-                    //int previousMS = (int)sw.ElapsedMilliseconds;
-
-                    try
+                    if (concurrentReadingQueue.Count < 100)
                     {
-                        if (streamReader.BaseStream.Position < lowerBoundByteOffset || streamReader.BaseStream.Position >= upperBoundByteOffset)
+                        //int previousMS = (int)sw.ElapsedMilliseconds;
+
+                        try
                         {
-                            Console.WriteLine("End of repeating interval reached at Position: " + streamReader.BaseStream.Position);
+                            if (streamReader.BaseStream.Position < lowerBoundByteOffset || streamReader.BaseStream.Position >= upperBoundByteOffset)
+                            {
+                                Console.WriteLine("End of repeating interval reached at Position: " + streamReader.BaseStream.Position);
+                                streamReader.BaseStream.Position = lowerBoundByteOffset;
+                                streamReader.BaseStream.Flush();
+                            }
+
+                            recentlyReadFrameByteOffset = streamReader.BaseStream.Position;
+                            for (int i = 0; i < recentylReadFrameData.Length; i++)
+                            {
+                                recentylReadFrameData[i] = streamReader.ReadUInt16();
+                            }
+
+                            Console.WriteLine(calcFrameNumber(recentlyReadFrameByteOffset));
+
+                            concurrentReadingQueue.Enqueue(new Tuple<long, ushort[]>(recentlyReadFrameByteOffset, recentylReadFrameData));
+                        }
+                        catch (EndOfStreamException ex)
+                        {
+                            Console.WriteLine("Stream reached EOF, returning to beginning.");
                             streamReader.BaseStream.Position = lowerBoundByteOffset;
                             streamReader.BaseStream.Flush();
                         }
-
-                        recentlyReadFrameByteOffset = streamReader.BaseStream.Position;
-                        for (int i = 0; i < recentylReadFrameData.Length; i++)
+                        catch (ObjectDisposedException ex)
                         {
-                            recentylReadFrameData[i] = streamReader.ReadUInt16();
+                            Console.WriteLine("Stream already closed (Exception).");
                         }
-                        
-                        concurrentReadingQueue.Enqueue(new Tuple<long, ushort[]>(recentlyReadFrameByteOffset, recentylReadFrameData));
-                    }
-                    catch (EndOfStreamException ex)
-                    {
-                        Console.WriteLine("Stream reached EOF, returning to beginning.");
-                        streamReader.BaseStream.Position = lowerBoundByteOffset;
-                        streamReader.BaseStream.Flush();
-                    }
-                    catch (ObjectDisposedException ex)
-                    {
-                        Console.WriteLine("Stream already closed (Exception).");
-                    }
 
-                    //int testMS = (int)DepthFrameReader.sw.ElapsedMilliseconds;
-                    //DepthFrameReader.performanceTestList.Add(testMS - previousMS);
+                        //int testMS = (int)DepthFrameReader.sw.ElapsedMilliseconds;
+                        //DepthFrameReader.performanceTestList.Add(testMS - previousMS);
+                    }
+                    else
+                    {
+                        new ManualResetEvent(false).WaitOne(20);
+                    }
                 }
                 else
                 {
+                    currentlyReading = false;
+                    streamReader.BaseStream.Flush();
                     new ManualResetEvent(false).WaitOne(20);
                 }
             }
-
-            streamReader.Dispose();
-            Console.WriteLine("Finished reading from file.");
         }
-
-        private static long transformMillisecondsToFrames(long ms)
+        
+        private long transformMillisecondsToBytes(long ms)
         {
-            long frameNum;
-            frameNum = (long)Math.Round((float)ms / 100 * 3);
-            return frameNum;
+            return (long)Math.Round((double)ms / 100 * 3) * recentylReadFrameData.Length * 2;
         }
 
-        private static long transformFramesToMilliseconds(long ms)
+        private long transformBytesToMilliseconds(long bytes)
         {
-            long frame;
-
-            return frame;
+            return bytes / (recentylReadFrameData.Length * 2) * 100 / 3;
         }
 
-        private static long transformMillisecondsToBytes(long ms)
+        private long calcFrameNumber(long frameBytes)
         {
-            long frame;
-
-            return frame;
+            return frameBytes / (recentylReadFrameData.Length * 2);
         }
-
-        private static long transformBytesToMilliseconds(long ms)
-        {
-            long frame;
-
-            return frame;
-        }
-
-        private static long transformBytesToFrames(long ms)
-        {
-            long frame;
-
-            return frame;
-        }
-
-        private static long transformFramesToBytes(long ms)
-        {
-            long frame;
-
-            return frame;
-        }
+        
     }
 }
