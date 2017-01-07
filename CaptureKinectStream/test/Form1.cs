@@ -41,7 +41,7 @@ namespace test
 
         private void button2_Click(object sender, EventArgs e)
         {
-            KinectSensor kinect = new KinectSensor(fps);
+            KinectSensor kinect = new KinectSensor();
 
             KinectDepthStreamRecorder.startController(kinect);
         }

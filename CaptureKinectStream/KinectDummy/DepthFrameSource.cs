@@ -11,10 +11,10 @@ namespace KinectDummy
         public FrameDescription FrameDescription { get; set; }
         private DepthFrameReader depthFrameReader;
 
-        public DepthFrameSource(int fps)
+        public DepthFrameSource()
         {
             FrameDescription = new FrameDescription();
-            depthFrameReader = new DepthFrameReader(fps);
+            depthFrameReader = new DepthFrameReader();
         }
 
         public DepthFrameReader OpenReader()

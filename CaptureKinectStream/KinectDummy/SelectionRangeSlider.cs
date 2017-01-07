@@ -19,27 +19,27 @@ namespace KinectDummy
         /// Minimum value of the slider.
         /// </summary>
         [Description("Minimum value of the slider.")]
-        public int Min
+        public long Min
         {
             get { return min; }
             set { min = value; Invalidate(); }
         }
-        int min = 0;
+        long min = 0;
         /// <summary>
         /// Maximum value of the slider.
         /// </summary>
         [Description("Maximum value of the slider.")]
-        public int Max
+        public long Max
         {
             get { return max; }
             set { max = value; Invalidate(); }
         }
-        int max = 100;
+        long max = 100;
         /// <summary>
         /// Minimum value of the selection range.
         /// </summary>
         [Description("Minimum value of the selection range.")]
-        public int SelectedMin
+        public long SelectedMin
         {
             get { return selectedMin; }
             set
@@ -50,12 +50,12 @@ namespace KinectDummy
                 Invalidate();
             }
         }
-        int selectedMin = 0;
+        long selectedMin = 0;
         /// <summary>
         /// Maximum value of the selection range.
         /// </summary>
         [Description("Maximum value of the selection range.")]
-        public int SelectedMax
+        public long SelectedMax
         {
             get { return selectedMax; }
             set
@@ -66,12 +66,12 @@ namespace KinectDummy
                 Invalidate();
             }
         }
-        int selectedMax = 100;
+        long selectedMax = 100;
         /// <summary>
         /// Current value.
         /// </summary>
         [Description("Current value.")]
-        public int Value
+        public long Value
         {
             get { return value; }
             set
@@ -82,7 +82,7 @@ namespace KinectDummy
                 Invalidate();
             }
         }
-        int value = 50;
+        long value = 50;
         /// <summary>
         /// Fired when SelectedMin or SelectedMax changes.
         /// </summary>
@@ -111,9 +111,9 @@ namespace KinectDummy
             e.Graphics.FillRectangle(Brushes.White, ClientRectangle);
             //paint selection range in blue
             Rectangle selectionRect = new Rectangle(
-                (selectedMin - Min) * Width / (Max - Min),
+                (int)((selectedMin - Min) * Width / (Max - Min)),
                 0,
-                (selectedMax - selectedMin) * Width / (Max - Min),
+                (int)((selectedMax - selectedMin) * Width / (Max - Min)),
                 Height);
             e.Graphics.FillRectangle(Brushes.Aqua, selectionRect);
             //draw a black frame around our control
@@ -127,11 +127,11 @@ namespace KinectDummy
         void SelectionRangeSlider_MouseDown(object sender, MouseEventArgs e)
         {
             //check where the user clicked so we can decide which thumb to move
-            int pointedValue = Min + e.X * (Max - Min) / Width;
-            int distValue = Math.Abs(pointedValue - Value);
-            int distMin = Math.Abs(pointedValue - SelectedMin);
-            int distMax = Math.Abs(pointedValue - SelectedMax);
-            int minDist = Math.Min(distValue, Math.Min(distMin, distMax));
+            long pointedValue = Min + e.X * (Max - Min) / Width;
+            long distValue = Math.Abs(pointedValue - Value);
+            long distMin = Math.Abs(pointedValue - SelectedMin);
+            long distMax = Math.Abs(pointedValue - SelectedMax);
+            long minDist = Math.Min(distValue, Math.Min(distMin, distMax));
             if (minDist == distValue)
                 movingMode = MovingMode.MovingValue;
             else if (minDist == distMin)
@@ -147,7 +147,7 @@ namespace KinectDummy
             //if the left button is pushed, move the selected thumb
             if (e.Button != MouseButtons.Left)
                 return;
-            int pointedValue = Min + e.X * (Max - Min) / Width;
+            long pointedValue = Min + e.X * (Max - Min) / Width;
             if (movingMode == MovingMode.MovingValue)
                 Value = pointedValue;
             else if (movingMode == MovingMode.MovingMin)

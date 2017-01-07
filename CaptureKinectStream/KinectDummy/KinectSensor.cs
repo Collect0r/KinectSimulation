@@ -10,9 +10,9 @@ namespace KinectDummy
     {
         public DepthFrameSource DepthFrameSource { get; set; }
 
-        public KinectSensor(int fps)
+        public KinectSensor()
         {
-            DepthFrameSource = new DepthFrameSource(fps);
+            DepthFrameSource = new DepthFrameSource();
         }
 
         public void Open()
@@ -22,7 +22,7 @@ namespace KinectDummy
 
         public static KinectSensor GetDefault()
         {
-            return new KinectSensor(30);
+            return new KinectSensor();
         }
     }
 }
