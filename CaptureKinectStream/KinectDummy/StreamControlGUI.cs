@@ -24,6 +24,8 @@ namespace KinectDummy
         private SliderValueChangeType recentlyChangedValue;
         private int fps = 30;
         private bool changedByReader = false;
+        private bool temporaryUpdateStop = false;
+        private bool showFramesInsteadOfMS = false;
 
         private delegate void updateTimeBarDelegate();
 
@@ -32,8 +34,22 @@ namespace KinectDummy
             this.depthFrameReader = depthFrameReader;
             InitializeComponent();
 
+            if (Properties.Settings.Default.StreamFilePath != "null")
+            {
+                savedKinectStreamFilePath = Properties.Settings.Default.StreamFilePath;
+                fileSetLabel.Text = savedKinectStreamFilePath;
+                fileSetLabel.Visible = true;
+                toggleStreamButton.Enabled = true;
+                freezeButton.Enabled = true;
+            }
+            else
+            {
+                freezeButton.Enabled = false;
+                toggleStreamButton.Enabled = false;
+            }
+
         }
-        
+
         private void chooseFileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -46,6 +62,12 @@ namespace KinectDummy
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 savedKinectStreamFilePath = openFileDialog1.FileName;
+                Properties.Settings.Default.StreamFilePath = savedKinectStreamFilePath;
+                Properties.Settings.Default.Save();
+                fileSetLabel.Text = savedKinectStreamFilePath;
+                freezeButton.Enabled = true;
+                fileSetLabel.Visible = true;
+                toggleStreamButton.Enabled = true;
             }
         }
 
@@ -94,12 +116,13 @@ namespace KinectDummy
 
             if (tempVal > 0 && tempVal < fileLengthMS)
             {
-                selectionRangeSlider1.Value = tempVal;
+                if (!temporaryUpdateStop)
+                    selectionRangeSlider1.Value = tempVal;
 
                 if (!currentPositionBox.Focused)
                 {
                     changedByReader = true;
-                    currentPositionBox.Text = tempVal.ToString();
+                    currentPositionBox.Text = transformMillisecondsToFrames(tempVal).ToString();
                 }
             }
         }
@@ -122,6 +145,7 @@ namespace KinectDummy
 
         private void selectionRangeSlider1_MouseUp(object sender, MouseEventArgs e)
         {
+            changedByReader = true;
             changeTimelineValues();
 
             mouseDown = false;
@@ -133,12 +157,11 @@ namespace KinectDummy
             {
                 case SliderValueChangeType.SelectedValue:
                     depthFrameReader.setTimelinePosition(selectionRangeSlider1.Value);
-                    currentPositionBox.Text = depthFrameReader.getCurrentFrameMilliseconds().ToString();
                     break;
                 default:
                     depthFrameReader.setRepeatingInterval(selectionRangeSlider1.SelectedMin, selectionRangeSlider1.SelectedMax);
-                    lowerBoundBox.Text = depthFrameReader.getLowerBoundMilliseconds().ToString();
-                    upperBoundBox.Text = depthFrameReader.getUpperBoundMilliseconds().ToString();
+                    lowerBoundBox.Text = transformMillisecondsToFrames(depthFrameReader.getLowerBoundMilliseconds()).ToString();
+                    upperBoundBox.Text = transformMillisecondsToFrames(depthFrameReader.getUpperBoundMilliseconds()).ToString();
                     break;
             }
         }
@@ -160,63 +183,122 @@ namespace KinectDummy
         {
             depthFrameReader.Dispose();
         }
-
-        private void lowerBoundBox_TextChanged(object sender, EventArgs e)
-        {
-            int potentialNewLowerBound;
-            bool success = Int32.TryParse(lowerBoundBox.Text, out potentialNewLowerBound);
-            if (success && potentialNewLowerBound >= 0 && potentialNewLowerBound <= fileLengthMS && potentialNewLowerBound <= selectionRangeSlider1.SelectedMax)
-            {
-                selectionRangeSlider1.SelectedMin = potentialNewLowerBound;
-                recentlyChangedValue = SliderValueChangeType.SelectedBound;
-                changeTimelineValues();
-            }
-            else
-            {
-                lowerBoundBox.Text = depthFrameReader.getLowerBoundMilliseconds().ToString();
-            }
-        }
-
-        private void currentPositionBox_TextChanged(object sender, EventArgs e)
-        {
-            if (changedByReader)
-            {
-                changedByReader = false;
-                return;
-            }
-            int potentialNewSliderPosition;
-            bool success = Int32.TryParse(currentPositionBox.Text, out potentialNewSliderPosition);
-            if (success && potentialNewSliderPosition >= 0 && potentialNewSliderPosition <= fileLengthMS)
-            {
-                selectionRangeSlider1.Value = potentialNewSliderPosition;
-                recentlyChangedValue = SliderValueChangeType.SelectedValue;
-                changeTimelineValues();
-            }
-            else
-            {
-                currentPositionBox.Text = depthFrameReader.getCurrentFrameMilliseconds().ToString();
-            }
-        }
-
-        private void upperBoundBox_TextChanged(object sender, EventArgs e)
-        {
-            int potentialNewUpperBound;
-            bool success = Int32.TryParse(upperBoundBox.Text, out potentialNewUpperBound);
-            if (success && potentialNewUpperBound >= 0 && potentialNewUpperBound <= fileLengthMS && potentialNewUpperBound >= selectionRangeSlider1.SelectedMin)
-            {
-                selectionRangeSlider1.SelectedMax = potentialNewUpperBound;
-                recentlyChangedValue = SliderValueChangeType.SelectedBound;
-                changeTimelineValues();
-            }
-            else
-            {
-                upperBoundBox.Text = depthFrameReader.getUpperBoundMilliseconds().ToString();
-            }
-        }
-
+        
         private void freezeButton_Click(object sender, EventArgs e)
         {
             depthFrameReader.changeFreezeMarker();
         }
+
+        private void lowerBoundBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                long potentialNewLowerBound;
+                bool success = Int64.TryParse(lowerBoundBox.Text, out potentialNewLowerBound);
+
+                if (success && showFramesInsteadOfMS)
+                {
+                    potentialNewLowerBound = transformFramesToMilliseconds(potentialNewLowerBound);
+                }
+
+                if (success && potentialNewLowerBound >= 0 && potentialNewLowerBound <= fileLengthMS && potentialNewLowerBound <= selectionRangeSlider1.SelectedMax)
+                {
+                    selectionRangeSlider1.SelectedMin = potentialNewLowerBound;
+                    recentlyChangedValue = SliderValueChangeType.SelectedBound;
+                    changeTimelineValues();
+                }
+                else
+                {
+                    lowerBoundBox.Text = transformMillisecondsToFrames(depthFrameReader.getLowerBoundMilliseconds()).ToString();
+                }
+            }
+        }
+
+        private void currentPositionBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                temporaryUpdateStop = true;
+                long potentialNewSliderPosition;
+                bool success = Int64.TryParse(currentPositionBox.Text, out potentialNewSliderPosition);
+
+                if (success && showFramesInsteadOfMS)
+                {
+                    potentialNewSliderPosition = transformFramesToMilliseconds(potentialNewSliderPosition);
+                }
+
+                if (success && potentialNewSliderPosition >= 0 && potentialNewSliderPosition <= fileLengthMS)
+                {
+                    selectionRangeSlider1.Value = potentialNewSliderPosition;
+                    recentlyChangedValue = SliderValueChangeType.SelectedValue;
+                    changeTimelineValues();
+                }
+                else
+                {
+                    currentPositionBox.Text = transformMillisecondsToFrames(depthFrameReader.getCurrentFrameMilliseconds()).ToString();
+                }
+                temporaryUpdateStop = false;
+                upperBoundBox.Focus();
+            }
+        }
+
+        private void upperBoundBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                long potentialNewUpperBound;
+                bool success = Int64.TryParse(upperBoundBox.Text, out potentialNewUpperBound);
+
+                if (success && showFramesInsteadOfMS)
+                {
+                    potentialNewUpperBound = transformFramesToMilliseconds(potentialNewUpperBound);
+                }
+
+                if (success && potentialNewUpperBound >= 0 && potentialNewUpperBound <= fileLengthMS && potentialNewUpperBound >= selectionRangeSlider1.SelectedMin)
+                {
+                    selectionRangeSlider1.SelectedMax = potentialNewUpperBound;
+                    recentlyChangedValue = SliderValueChangeType.SelectedBound;
+                    changeTimelineValues();
+                }
+                else
+                {
+                    upperBoundBox.Text = transformMillisecondsToFrames(depthFrameReader.getUpperBoundMilliseconds()).ToString();
+                }
+            }
+        }
+
+        private void measureUnitButton_Click(object sender, EventArgs e)
+        {
+            showFramesInsteadOfMS = !showFramesInsteadOfMS;
+            if (showFramesInsteadOfMS)
+            {
+                unitLabelOne.Text = "ms";
+                unitLabelTwo.Text = "ms";
+                unitLabelThree.Text = "ms";
+            }
+            else
+            {
+                unitLabelOne.Text = "frames";
+                unitLabelTwo.Text = "frames";
+                unitLabelThree.Text = "frames";
+            }
+        }
+
+        private long transformFramesToMilliseconds(long frames)
+        {
+            if (showFramesInsteadOfMS)
+                return (long)Math.Round((double)frames / 3 * 100);
+            else
+                return frames;
+        }
+
+        private long transformMillisecondsToFrames(long milliseconds)
+        {
+            if (showFramesInsteadOfMS)
+                return (long)Math.Round((double)milliseconds / 100 * 3);
+            else
+                return milliseconds;
+        }
+
     }
 }

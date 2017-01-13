@@ -38,8 +38,13 @@
             this.upperBoundBox = new System.Windows.Forms.TextBox();
             this.currentPositionBox = new System.Windows.Forms.TextBox();
             this.lowerBoundBox = new System.Windows.Forms.TextBox();
-            this.selectionRangeSlider1 = new KinectDummy.SelectionRangeSlider();
             this.freezeButton = new System.Windows.Forms.Button();
+            this.fileSetLabel = new System.Windows.Forms.Label();
+            this.measureUnitButton = new System.Windows.Forms.Button();
+            this.unitLabelTwo = new System.Windows.Forms.Label();
+            this.unitLabelOne = new System.Windows.Forms.Label();
+            this.unitLabelThree = new System.Windows.Forms.Label();
+            this.selectionRangeSlider1 = new KinectDummy.SelectionRangeSlider();
             ((System.ComponentModel.ISupportInitialize)(this.fpsSetter)).BeginInit();
             this.SuspendLayout();
             // 
@@ -55,7 +60,7 @@
             // 
             // toggleStreamButton
             // 
-            this.toggleStreamButton.Location = new System.Drawing.Point(201, 388);
+            this.toggleStreamButton.Location = new System.Drawing.Point(201, 400);
             this.toggleStreamButton.Name = "toggleStreamButton";
             this.toggleStreamButton.Size = new System.Drawing.Size(142, 50);
             this.toggleStreamButton.TabIndex = 1;
@@ -125,7 +130,7 @@
             this.upperBoundBox.Size = new System.Drawing.Size(57, 22);
             this.upperBoundBox.TabIndex = 15;
             this.upperBoundBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.upperBoundBox.TextChanged += new System.EventHandler(this.upperBoundBox_TextChanged);
+            this.upperBoundBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.upperBoundBox_KeyDown);
             // 
             // currentPositionBox
             // 
@@ -134,7 +139,7 @@
             this.currentPositionBox.Size = new System.Drawing.Size(64, 22);
             this.currentPositionBox.TabIndex = 16;
             this.currentPositionBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.currentPositionBox.TextChanged += new System.EventHandler(this.currentPositionBox_TextChanged);
+            this.currentPositionBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.currentPositionBox_KeyDown);
             // 
             // lowerBoundBox
             // 
@@ -142,7 +147,65 @@
             this.lowerBoundBox.Name = "lowerBoundBox";
             this.lowerBoundBox.Size = new System.Drawing.Size(57, 22);
             this.lowerBoundBox.TabIndex = 17;
-            this.lowerBoundBox.TextChanged += new System.EventHandler(this.lowerBoundBox_TextChanged);
+            this.lowerBoundBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lowerBoundBox_KeyDown);
+            // 
+            // freezeButton
+            // 
+            this.freezeButton.Location = new System.Drawing.Point(360, 406);
+            this.freezeButton.Name = "freezeButton";
+            this.freezeButton.Size = new System.Drawing.Size(115, 36);
+            this.freezeButton.TabIndex = 18;
+            this.freezeButton.Text = "Freeze Frame";
+            this.freezeButton.UseVisualStyleBackColor = true;
+            this.freezeButton.Click += new System.EventHandler(this.freezeButton_Click);
+            // 
+            // fileSetLabel
+            // 
+            this.fileSetLabel.ForeColor = System.Drawing.Color.DarkGray;
+            this.fileSetLabel.Location = new System.Drawing.Point(12, 175);
+            this.fileSetLabel.Name = "fileSetLabel";
+            this.fileSetLabel.Size = new System.Drawing.Size(522, 20);
+            this.fileSetLabel.TabIndex = 19;
+            this.fileSetLabel.Text = "File set!";
+            this.fileSetLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.fileSetLabel.Visible = false;
+            // 
+            // measureUnitButton
+            // 
+            this.measureUnitButton.Location = new System.Drawing.Point(70, 407);
+            this.measureUnitButton.Name = "measureUnitButton";
+            this.measureUnitButton.Size = new System.Drawing.Size(114, 36);
+            this.measureUnitButton.TabIndex = 20;
+            this.measureUnitButton.Text = "Toggle Unit";
+            this.measureUnitButton.UseVisualStyleBackColor = true;
+            this.measureUnitButton.Click += new System.EventHandler(this.measureUnitButton_Click);
+            // 
+            // unitLabelTwo
+            // 
+            this.unitLabelTwo.Location = new System.Drawing.Point(241, 367);
+            this.unitLabelTwo.Name = "unitLabelTwo";
+            this.unitLabelTwo.Size = new System.Drawing.Size(64, 17);
+            this.unitLabelTwo.TabIndex = 22;
+            this.unitLabelTwo.Text = "ms";
+            this.unitLabelTwo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // unitLabelOne
+            // 
+            this.unitLabelOne.Location = new System.Drawing.Point(9, 367);
+            this.unitLabelOne.Name = "unitLabelOne";
+            this.unitLabelOne.Size = new System.Drawing.Size(64, 17);
+            this.unitLabelOne.TabIndex = 23;
+            this.unitLabelOne.Text = "ms";
+            this.unitLabelOne.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // unitLabelThree
+            // 
+            this.unitLabelThree.Location = new System.Drawing.Point(474, 367);
+            this.unitLabelThree.Name = "unitLabelThree";
+            this.unitLabelThree.Size = new System.Drawing.Size(64, 17);
+            this.unitLabelThree.TabIndex = 24;
+            this.unitLabelThree.Text = "ms";
+            this.unitLabelThree.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // selectionRangeSlider1
             // 
@@ -160,21 +223,16 @@
             this.selectionRangeSlider1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.selectionRangeSlider1_MouseDown);
             this.selectionRangeSlider1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.selectionRangeSlider1_MouseUp);
             // 
-            // freezeButton
-            // 
-            this.freezeButton.Location = new System.Drawing.Point(406, 402);
-            this.freezeButton.Name = "freezeButton";
-            this.freezeButton.Size = new System.Drawing.Size(115, 23);
-            this.freezeButton.TabIndex = 18;
-            this.freezeButton.Text = "Freeze Frame";
-            this.freezeButton.UseVisualStyleBackColor = true;
-            this.freezeButton.Click += new System.EventHandler(this.freezeButton_Click);
-            // 
             // StreamControlGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(546, 450);
+            this.ClientSize = new System.Drawing.Size(546, 467);
+            this.Controls.Add(this.unitLabelThree);
+            this.Controls.Add(this.unitLabelOne);
+            this.Controls.Add(this.unitLabelTwo);
+            this.Controls.Add(this.measureUnitButton);
+            this.Controls.Add(this.fileSetLabel);
             this.Controls.Add(this.freezeButton);
             this.Controls.Add(this.lowerBoundBox);
             this.Controls.Add(this.currentPositionBox);
@@ -210,5 +268,10 @@
         private System.Windows.Forms.TextBox currentPositionBox;
         private System.Windows.Forms.TextBox lowerBoundBox;
         private System.Windows.Forms.Button freezeButton;
+        private System.Windows.Forms.Label fileSetLabel;
+        private System.Windows.Forms.Button measureUnitButton;
+        private System.Windows.Forms.Label unitLabelTwo;
+        private System.Windows.Forms.Label unitLabelOne;
+        private System.Windows.Forms.Label unitLabelThree;
     }
 }

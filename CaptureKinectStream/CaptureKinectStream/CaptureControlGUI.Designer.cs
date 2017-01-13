@@ -33,17 +33,12 @@
             this.folderLabel = new System.Windows.Forms.Label();
             this.fileNameLabel = new System.Windows.Forms.Label();
             this.fileName = new System.Windows.Forms.TextBox();
-            this.shapeContainer1 = new Microsoft.VisualBasic.PowerPacks.ShapeContainer();
-            this.lineShape1 = new Microsoft.VisualBasic.PowerPacks.LineShape();
             this.headline1 = new System.Windows.Forms.Label();
             this.headline2 = new System.Windows.Forms.Label();
             this.filePathLabel = new System.Windows.Forms.Label();
             this.currentFolderLabel = new System.Windows.Forms.Label();
-            this.lineShape2 = new Microsoft.VisualBasic.PowerPacks.LineShape();
-            this.lineShape3 = new Microsoft.VisualBasic.PowerPacks.LineShape();
             this.label1 = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.lineShape4 = new Microsoft.VisualBasic.PowerPacks.LineShape();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -98,30 +93,6 @@
             this.fileName.Text = "recordedKinectDepthStream.kcs";
             this.fileName.TextChanged += new System.EventHandler(this.fileName_TextChanged);
             // 
-            // shapeContainer1
-            // 
-            this.shapeContainer1.Location = new System.Drawing.Point(0, 0);
-            this.shapeContainer1.Margin = new System.Windows.Forms.Padding(0);
-            this.shapeContainer1.Name = "shapeContainer1";
-            this.shapeContainer1.Shapes.AddRange(new Microsoft.VisualBasic.PowerPacks.Shape[] {
-            this.lineShape4,
-            this.lineShape3,
-            this.lineShape2,
-            this.lineShape1});
-            this.shapeContainer1.Size = new System.Drawing.Size(336, 447);
-            this.shapeContainer1.TabIndex = 5;
-            this.shapeContainer1.TabStop = false;
-            // 
-            // lineShape1
-            // 
-            this.lineShape1.BorderColor = System.Drawing.Color.CornflowerBlue;
-            this.lineShape1.BorderWidth = 2;
-            this.lineShape1.Name = "lineShape1";
-            this.lineShape1.X1 = 10;
-            this.lineShape1.X2 = 322;
-            this.lineShape1.Y1 = 87;
-            this.lineShape1.Y2 = 87;
-            // 
             // headline1
             // 
             this.headline1.AutoSize = true;
@@ -140,7 +111,7 @@
             this.headline2.ForeColor = System.Drawing.Color.Black;
             this.headline2.Location = new System.Drawing.Point(64, 35);
             this.headline2.Name = "headline2";
-            this.headline2.Size = new System.Drawing.Size(203, 52);
+            this.headline2.Size = new System.Drawing.Size(199, 51);
             this.headline2.TabIndex = 7;
             this.headline2.Text = "Recorder";
             // 
@@ -156,33 +127,13 @@
             // 
             // currentFolderLabel
             // 
-            this.currentFolderLabel.AutoSize = true;
             this.currentFolderLabel.ForeColor = System.Drawing.Color.Gray;
-            this.currentFolderLabel.Location = new System.Drawing.Point(98, 156);
+            this.currentFolderLabel.Location = new System.Drawing.Point(12, 156);
             this.currentFolderLabel.Name = "currentFolderLabel";
-            this.currentFolderLabel.Size = new System.Drawing.Size(125, 17);
+            this.currentFolderLabel.Size = new System.Drawing.Size(312, 17);
             this.currentFolderLabel.TabIndex = 9;
             this.currentFolderLabel.Text = "current folder path";
-            // 
-            // lineShape2
-            // 
-            this.lineShape2.BorderColor = System.Drawing.Color.CornflowerBlue;
-            this.lineShape2.BorderWidth = 2;
-            this.lineShape2.Name = "lineShape2";
-            this.lineShape2.X1 = 10;
-            this.lineShape2.X2 = 322;
-            this.lineShape2.Y1 = 189;
-            this.lineShape2.Y2 = 189;
-            // 
-            // lineShape3
-            // 
-            this.lineShape3.BorderColor = System.Drawing.Color.CornflowerBlue;
-            this.lineShape3.BorderWidth = 2;
-            this.lineShape3.Name = "lineShape3";
-            this.lineShape3.X1 = 10;
-            this.lineShape3.X2 = 322;
-            this.lineShape3.Y1 = 270;
-            this.lineShape3.Y2 = 270;
+            this.currentFolderLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label1
             // 
@@ -201,16 +152,6 @@
             this.numericUpDown1.Size = new System.Drawing.Size(48, 22);
             this.numericUpDown1.TabIndex = 11;
             this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
-            // 
-            // lineShape4
-            // 
-            this.lineShape4.BorderColor = System.Drawing.Color.CornflowerBlue;
-            this.lineShape4.BorderWidth = 2;
-            this.lineShape4.Name = "lineShape4";
-            this.lineShape4.X1 = 15;
-            this.lineShape4.X2 = 327;
-            this.lineShape4.Y1 = 365;
-            this.lineShape4.Y2 = 365;
             // 
             // label2
             // 
@@ -250,7 +191,6 @@
             this.Controls.Add(this.folderLabel);
             this.Controls.Add(this.chooseFolder);
             this.Controls.Add(this.recordingToggle);
-            this.Controls.Add(this.shapeContainer1);
             this.Name = "CaptureControlGUI";
             this.Text = "CaptureControlGUI";
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
@@ -266,15 +206,10 @@
         private System.Windows.Forms.Label folderLabel;
         private System.Windows.Forms.Label fileNameLabel;
         private System.Windows.Forms.TextBox fileName;
-        private Microsoft.VisualBasic.PowerPacks.ShapeContainer shapeContainer1;
-        private Microsoft.VisualBasic.PowerPacks.LineShape lineShape2;
-        private Microsoft.VisualBasic.PowerPacks.LineShape lineShape1;
         private System.Windows.Forms.Label headline1;
         private System.Windows.Forms.Label headline2;
         private System.Windows.Forms.Label filePathLabel;
         private System.Windows.Forms.Label currentFolderLabel;
-        private Microsoft.VisualBasic.PowerPacks.LineShape lineShape4;
-        private Microsoft.VisualBasic.PowerPacks.LineShape lineShape3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.Label label2;

@@ -123,8 +123,8 @@ namespace KinectDummy
 
             cleanUpQueue();
 
-            lowerBoundByteOffset = transformMillisecondsToBytes(lowerBoundMS);
-            upperBoundByteOffset = transformMillisecondsToBytes(upperBoundMS);
+            lowerBoundByteOffset = Math.Max(transformMillisecondsToBytes(lowerBoundMS), 0);
+            upperBoundByteOffset = Math.Min(transformMillisecondsToBytes(upperBoundMS), fileSizeInBytes);
 
             pauseReadingRequested = false;
             pauseStreamingRequested = false;
@@ -139,8 +139,12 @@ namespace KinectDummy
 
             cleanUpQueue();
 
-            streamReader.BaseStream.Position = transformMillisecondsToBytes(currentMS);
-            streamReader.BaseStream.Flush();
+            long tempBytes = transformMillisecondsToBytes(currentMS);
+            if (tempBytes >= 0 && tempBytes < fileSizeInBytes)
+            {
+                streamReader.BaseStream.Position = tempBytes;
+                streamReader.BaseStream.Flush();
+            }
             
             pauseReadingRequested = false;
             pauseStreamingRequested = false;
@@ -233,10 +237,17 @@ namespace KinectDummy
         private void detachEventsFromTimers()
         {
             frameArrivedEventSet = false;
-            dequeueFrameTimer.Elapsed -= dequeueFrame;
-            frameArrivedTimer.Elapsed -= kickFrameArrivedEvent;
-            dequeueFrameTimer.Stop();
-            frameArrivedTimer.Stop();
+
+            if (dequeueFrameTimer != null)
+            {
+                dequeueFrameTimer.Elapsed -= dequeueFrame;
+                dequeueFrameTimer.Stop();
+            }
+            if (frameArrivedTimer != null)
+            {
+                frameArrivedTimer.Elapsed -= kickFrameArrivedEvent;
+                frameArrivedTimer.Stop();
+            }
         }
 
         public void startStreaming(int fps)
@@ -304,7 +315,7 @@ namespace KinectDummy
                 {
                     currentDepthFrame = new DepthFrame(currentFrame.Item2);
 
-                    Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (deq)");
+                    //Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (deq)");
                 }
                 
             }
@@ -393,7 +404,6 @@ namespace KinectDummy
                 else
                 {
                     currentlyReading = false;
-                    streamReader.BaseStream.Flush();
                     new ManualResetEvent(false).WaitOne(20);
                 }
             }

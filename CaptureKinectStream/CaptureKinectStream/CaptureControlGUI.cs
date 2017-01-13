@@ -14,7 +14,7 @@ namespace CaptureKinectStream
     {
         private bool currentlyRecording = false;
 
-        private String saveFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        private String saveFolderPath;
 
         private String saveFileName = "recordedKinectDepthStream.kcs";
 
@@ -26,8 +26,16 @@ namespace CaptureKinectStream
         {
             InitializeComponent();
 
-            currentFolderLabel.Text = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            if (Properties.Settings.Default.SaveFolderPath != "null")
+            {
+                saveFolderPath = Properties.Settings.Default.SaveFolderPath;
+            }
+            else
+            {
+                saveFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            }
 
+            currentFolderLabel.Text = saveFolderPath;
             this.captureController = captureController;
         }
 
@@ -57,6 +65,9 @@ namespace CaptureKinectStream
             {
                 saveFolderPath = saveFolderBrowser.SelectedPath;
                 folderLabel.Text = saveFolderPath;
+
+                Properties.Settings.Default.SaveFolderPath = saveFolderPath;
+                Properties.Settings.Default.Save();
             }
 
         }

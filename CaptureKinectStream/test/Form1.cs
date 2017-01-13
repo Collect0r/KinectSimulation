@@ -45,10 +45,6 @@ namespace test
 
             KinectDepthStreamRecorder.startController(kinect);
         }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            fps = Int32.Parse(textBox1.Text);
-        }
+        
     }
 }
