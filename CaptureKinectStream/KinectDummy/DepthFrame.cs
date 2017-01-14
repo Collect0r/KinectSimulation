@@ -22,5 +22,10 @@ namespace KinectDummy
         {
             frameDataToBeFilled = fakeFrameDataAsArray;
         }
+
+        public KinectBuffer LockImageBuffer()
+        {
+            return new KinectBuffer(fakeFrameDataAsArray);
+        }
     }
 }
