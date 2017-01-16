@@ -8,7 +8,7 @@ namespace KinectDummy
 {
     public class DepthFrameSource
     {
-        public FrameDescription FrameDescription { get; set; }
+        public FrameDescription FrameDescription { get; }
         private DepthFrameReader depthFrameReader;
 
         public DepthFrameSource()

@@ -17,10 +17,6 @@ namespace KinectDummy
         
         public DepthFrame AcquireFrame()
         {
-            using (int asd = 5)
-            {
-
-            }
             return depthFrame;  
         }
     }

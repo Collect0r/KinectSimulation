@@ -91,6 +91,8 @@ namespace KinectDummy
                     selectionRangeSlider1.Max = fileLengthMS;
                     selectionRangeSlider1.Min = 0;
                     selectionRangeSlider1.SelectedMax = fileLengthMS;
+                    upperBoundBox.Text = transformMillisecondsToFrames(fileLengthMS).ToString();
+                    lowerBoundBox.Text = "0";
                 }
 
                 depthFrameReader.startStreaming(fps);
@@ -270,18 +272,22 @@ namespace KinectDummy
         private void measureUnitButton_Click(object sender, EventArgs e)
         {
             showFramesInsteadOfMS = !showFramesInsteadOfMS;
+
             if (showFramesInsteadOfMS)
-            {
-                unitLabelOne.Text = "ms";
-                unitLabelTwo.Text = "ms";
-                unitLabelThree.Text = "ms";
-            }
-            else
             {
                 unitLabelOne.Text = "frames";
                 unitLabelTwo.Text = "frames";
                 unitLabelThree.Text = "frames";
             }
+            else
+            {
+                unitLabelOne.Text = "ms";
+                unitLabelTwo.Text = "ms";
+                unitLabelThree.Text = "ms";
+            }
+
+            lowerBoundBox.Text = transformMillisecondsToFrames(selectionRangeSlider1.SelectedMin).ToString();
+            upperBoundBox.Text = transformMillisecondsToFrames(selectionRangeSlider1.SelectedMax).ToString();
         }
 
         private long transformFramesToMilliseconds(long frames)

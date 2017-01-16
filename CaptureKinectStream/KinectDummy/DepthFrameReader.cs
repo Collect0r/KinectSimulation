@@ -13,50 +13,15 @@ using System.Windows.Forms;
 
 namespace KinectDummy
 {
+    public delegate void EventHandler<DepthFrameArrivedEventArgs>(object sender, DepthFrameArrivedEventArgs e);
+
     public class DepthFrameReader
     {
-        //private string myStr;
-        //public string MyStr
-        //{
-        //    get
-        //    {
-        //        return myStr;
-        //    }
-        //    set
-        //    {
-        //        myStr = value;
-        //        OnPropertyChanged("MyStr");
-        //    }
-        //}
-
-        //private long currentPositionMilliseconds;
-        //public long CurrentPositionMilliseconds
-        //{
-        //    get
-        //    {
-        //        return currentPositionMilliseconds;
-        //    }
-        //    set
-        //    {
-        //        currentPositionMilliseconds = value;
-        //        OnPropertyChanged("CurrentPositionMilliseconds");
-        //    }
-        //}
-
-        //public event PropertyChangedEventHandler PropertyChanged;
-
-        //protected virtual void OnPropertyChanged(string propertyName)
-        //{
-        //    if (PropertyChanged != null)
-        //    {
-        //        PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-        //    }
-        //}
-
         private ushort[] recentylReadFrameData = new ushort[new FrameDescription().Height * new FrameDescription().Width];
         private long recentlyReadFrameByteOffset = 0;
 
-        public EventHandler<DepthFrameArrivedEventArgs> FrameArrived;
+
+        public event EventHandler<DepthFrameArrivedEventArgs> FrameArrived;
         public BinaryReader streamReader;
 
         private String savedStreamFilePath;
@@ -315,25 +280,52 @@ namespace KinectDummy
                 {
                     currentDepthFrame = new DepthFrame(currentFrame.Item2);
 
-                    //Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (deq)");
+                    ////Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (deq)");
                 }
                 
             }
 
             if (pauseStreamingRequested)
             {
-                Console.WriteLine("Steraming was paused due to buffering or cleaning up the queue. Occurs when changes are made in the GUI while running.");
+                //Console.WriteLine("Steraming was paused due to buffering or cleaning up the queue. Occurs when changes are made in the GUI while running.");
                 currentlyDequeing = false;
             }
         }
 
+        private int counter = 0;
         public void kickFrameArrivedEvent(object sender, EventArgs e)
         {
             if (sensorOpened && FrameArrived != null && currentDepthFrame != null)
-                FrameArrived(this, new DepthFrameArrivedEventArgs(currentDepthFrame));
+            {
+                var eventListeners = FrameArrived.GetInvocationList();
+                
+                for (int i = 0; i < eventListeners.Count(); i++)
+                {
+                    var methodToInvoke = (EventHandler<DepthFrameArrivedEventArgs>)eventListeners[i];
+                    methodToInvoke.BeginInvoke(this, new DepthFrameArrivedEventArgs(currentDepthFrame), null, null);
+                }
 
-            if (currentFrame != null)
-                Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (streamed)");
+                Console.WriteLine(counter++ + " kicked");
+            }
+
+           // if (currentFrame != null)
+                //Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (streamed)");
+        }
+
+        private void EndAsyncEvent(IAsyncResult iar)
+        {
+            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
+            var invokedMethod = (EventHandler)ar.AsyncDelegate;
+
+            try
+            {
+                invokedMethod.EndInvoke(iar);
+            }
+            catch
+            {
+                // Handle any exceptions that were thrown by the invoked method
+                //Console.WriteLine("An event listener went kaboom!");
+            }
         }
 
         public DepthFrame AcquireLatestFrame()
@@ -345,7 +337,7 @@ namespace KinectDummy
         {
             if (initiallyStarted)
             {
-                Console.WriteLine("Already reading from file.");
+                //Console.WriteLine("Already reading from file.");
                 return;
             }
                 
@@ -367,7 +359,7 @@ namespace KinectDummy
                         {
                             if (streamReader.BaseStream.Position < lowerBoundByteOffset || streamReader.BaseStream.Position >= upperBoundByteOffset)
                             {
-                                Console.WriteLine("End of repeating interval reached at Position: " + streamReader.BaseStream.Position);
+                                //Console.WriteLine("End of repeating interval reached at Position: " + streamReader.BaseStream.Position);
                                 streamReader.BaseStream.Position = lowerBoundByteOffset;
                                 streamReader.BaseStream.Flush();
                             }
@@ -378,19 +370,19 @@ namespace KinectDummy
                                 recentylReadFrameData[i] = streamReader.ReadUInt16();
                             }
 
-                            //Console.WriteLine(calcFrameNumber(recentlyReadFrameByteOffset) + " (read)");
+                            ////Console.WriteLine(calcFrameNumber(recentlyReadFrameByteOffset) + " (read)");
 
                             concurrentReadingQueue.Enqueue(new Tuple<long, ushort[]>(recentlyReadFrameByteOffset, recentylReadFrameData));
                         }
                         catch (EndOfStreamException ex)
                         {
-                            Console.WriteLine("Stream reached EOF, returning to beginning.");
+                            //Console.WriteLine("Stream reached EOF, returning to beginning.");
                             streamReader.BaseStream.Position = lowerBoundByteOffset;
                             streamReader.BaseStream.Flush();
                         }
                         catch (ObjectDisposedException ex)
                         {
-                            Console.WriteLine("Stream already closed (Exception).");
+                            //Console.WriteLine("Stream already closed (Exception).");
                         }
 
                         //int testMS = (int)DepthFrameReader.sw.ElapsedMilliseconds;

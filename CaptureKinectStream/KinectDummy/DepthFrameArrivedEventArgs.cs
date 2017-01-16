@@ -8,7 +8,7 @@ namespace KinectDummy
 {
     public class DepthFrameArrivedEventArgs : EventArgs
     {
-        public DepthFrameReference FrameReference;
+        public DepthFrameReference FrameReference { get; }
 
         public DepthFrameArrivedEventArgs(DepthFrame depthFrame)
         {

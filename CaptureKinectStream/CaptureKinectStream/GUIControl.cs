@@ -8,11 +8,13 @@ using System.Windows.Forms;
 
 namespace CaptureKinectStream
 {
-    static class GUIControl
+    internal static class GUIControl
     {
         private static CapturingController captureController;
 
-        public static void startGUIParallel(CapturingController kinectCapturing)
+        private static CaptureControlGUI gui;
+
+        internal static void startGUIParallel(CapturingController kinectCapturing)
         {
             if (kinectCapturing == null)
                 throw new InvalidOperationException("KinectCapturing must be initialized.");
@@ -29,7 +31,13 @@ namespace CaptureKinectStream
 
         private static void startGUI()
         {
-            Application.Run(new CaptureControlGUI(captureController));
+            gui = new CaptureControlGUI(captureController);
+            Application.Run(gui);
+        }
+
+        internal static CaptureControlGUI getGUI()
+        {
+            return gui;
         }
     }
 }

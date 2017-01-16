@@ -12,8 +12,10 @@ using System.Diagnostics;
 
 namespace CaptureKinectStream
 {
-    public class CapturingController
+    internal class CapturingController
     {
+        private static Stopwatch sw;
+
         private bool currentlyCapturing = false;
         private KinectSensor kinect;
         private DepthFrameReader depthFrameReader;
@@ -21,19 +23,18 @@ namespace CaptureKinectStream
         private ushort[] depthFrameAsArray;
         private int width;
         private int height;
-        private Stopwatch sw;
         private bool firstFrame = true;
         private int secondsToCapture;
 
-        public CapturingController(KinectSensor kinect)
+        internal CapturingController(KinectSensor kinect)
         {
             if (kinect == null)
                 throw new InvalidOperationException("Can't start capturing kinect frames because KinectSensor was null.");
 
             this.kinect = kinect;
         }
-        
-        public void startCapturing(String filePath, int secondsToCapture = 0)
+
+        internal void startCapturing(String filePath, int secondsToCapture = 0)
         {
             this.secondsToCapture = secondsToCapture;
 
@@ -48,15 +49,14 @@ namespace CaptureKinectStream
             depthFrameReader = kinect.DepthFrameSource.OpenReader();
             depthFrameReader.FrameArrived += depthDataReadyEventHandler;
         }
-        
-        public void stopCapturing()
+
+        internal void stopCapturing()
         {
+            sw.Stop();
             DataStreamHandler.requestWriteStop();
             depthFrameReader.FrameArrived -= depthDataReadyEventHandler;
-            Console.WriteLine("STOPPED");
-
-            // gets also called in real code??? think nope
-            //depthFrameReader.Dispose();
+            
+            //Console.WriteLine("STOPPED");
         }
 
         private void depthDataReadyEventHandler(object sender, DepthFrameArrivedEventArgs e)
@@ -74,7 +74,7 @@ namespace CaptureKinectStream
             }
             else
             {
-                depthFrameReader.AcquireLatestFrame().CopyFrameDataToArray(ref depthFrameAsArray);
+                e.FrameReference.AcquireFrame().CopyFrameDataToArray(ref depthFrameAsArray);
                 
                 DataStreamHandler.addFrameToQueue(depthFrameAsArray);
             }

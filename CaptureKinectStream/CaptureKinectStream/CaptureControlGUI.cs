@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace CaptureKinectStream
 {
-    public partial class CaptureControlGUI : Form
+    internal partial class CaptureControlGUI : Form
     {
         private bool currentlyRecording = false;
 
@@ -22,7 +22,9 @@ namespace CaptureKinectStream
 
         private int recordingDuration = 0;
 
-        public CaptureControlGUI(CapturingController captureController)
+        private delegate void stopRecordingCallbackDelegate();
+
+        internal CaptureControlGUI(CapturingController captureController)
         {
             InitializeComponent();
 
@@ -39,20 +41,31 @@ namespace CaptureKinectStream
             this.captureController = captureController;
         }
 
+        internal void sendStopRecordingCallback()
+        {
+            Invoke(new stopRecordingCallbackDelegate(displayRecordingStopped));
+        }
+
+        private void displayRecordingStopped()
+        {
+            recordingToggle.Text = "Start Recording";
+            recordSuccessfulLabel.Visible = true;
+            currentlyRecording = false;
+        }
+
         private void recordingToggle_Click(object sender, EventArgs e)
         {
             if (!currentlyRecording)
             {
                 recordingToggle.Text = "Stop Recording";
+                recordSuccessfulLabel.Visible = false;
                 captureController.startCapturing(saveFolderPath + "//" + saveFileName, recordingDuration);
+                currentlyRecording = true;
             }
             else
             {
-                recordingToggle.Text = "Start Recording";
                 captureController.stopCapturing();
             }
-
-            currentlyRecording = !currentlyRecording;
         }
 
         private void chooseFolder_Click(object sender, EventArgs e)

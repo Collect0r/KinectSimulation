@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 namespace KinectDummy
 {
+    //public delegate void EventHandler<IsAvailableChangedEventArgs>(object sender, IsAvailableChangedEventArgs e);
+
     public class KinectSensor
     {
-        public DepthFrameSource DepthFrameSource { get; set; }
+        public DepthFrameSource DepthFrameSource { get; }
+
+        public bool IsAvailable { get; } = true;
+
+        public EventHandler<IsAvailableChangedEventArgs> IsAvailableChanged;
 
         public KinectSensor()
         {
@@ -18,6 +24,11 @@ namespace KinectDummy
         public void Open()
         {
             
+        }
+
+        public void Close()
+        {
+
         }
 
         public static KinectSensor GetDefault()

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KinectDummy
 {
-    public class DepthFrame
+    public class DepthFrame : IDisposable
     {
         ushort[] fakeFrameDataAsArray;
 
@@ -26,6 +26,11 @@ namespace KinectDummy
         public KinectBuffer LockImageBuffer()
         {
             return new KinectBuffer(fakeFrameDataAsArray);
+        }
+
+        public void Dispose()
+        {
+            // ?? maybe dispose kinectbuffer
         }
     }
 }

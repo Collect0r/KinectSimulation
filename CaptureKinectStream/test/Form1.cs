@@ -35,7 +35,7 @@ namespace test
             {
                 savedKinectStreamFilePath = openFileDialog1.FileName;
 
-                Console.WriteLine(savedKinectStreamFilePath);
+                //Console.WriteLine(savedKinectStreamFilePath);
             }
         }
 
