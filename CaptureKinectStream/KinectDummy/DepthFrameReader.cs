@@ -312,8 +312,11 @@ namespace KinectDummy
             {
                 if (streamLiveFrames)
                 {
-                    realDepthFrameReader.AcquireLatestFrame().CopyFrameDataToArray(realFrameDataAsArray);
-                    liveDepthFrame = new DepthFrame(realFrameDataAsArray);
+                    using (Microsoft.Kinect.DepthFrame tempRealDepthFrame = realDepthFrameReader.AcquireLatestFrame())
+                    {
+                        tempRealDepthFrame.CopyFrameDataToArray(realFrameDataAsArray);
+                        liveDepthFrame = new DepthFrame(realFrameDataAsArray);
+                    }
                 }
 
                 //async call of every listener
@@ -349,7 +352,10 @@ namespace KinectDummy
 
         public DepthFrame AcquireLatestFrame()
         {
-            return currentDepthFrame;
+            if (streamLiveFrames)
+                return liveDepthFrame;
+            else
+                return currentDepthFrame;
         }
 
         public void startFillingQueueFromFile()

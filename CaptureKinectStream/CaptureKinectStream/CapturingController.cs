@@ -77,9 +77,11 @@ namespace CaptureKinectStream
             }
             else
             {
-                e.FrameReference.AcquireFrame().CopyFrameDataToArray(/*ref*/ depthFrameAsArray);
-                
-                DataStreamHandler.addFrameToQueue(depthFrameAsArray);
+                using (DepthFrame tempRealDepthFrame = e.FrameReference.AcquireFrame())
+                {
+                    tempRealDepthFrame.CopyFrameDataToArray(/*ref*/ depthFrameAsArray);
+                    DataStreamHandler.addFrameToQueue(depthFrameAsArray);
+                }
             }
         }
 
