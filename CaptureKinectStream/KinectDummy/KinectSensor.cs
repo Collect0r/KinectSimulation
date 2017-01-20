@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using Microsoft.Kinect;
 
 namespace KinectDummy
 {
@@ -17,9 +16,21 @@ namespace KinectDummy
 
         public EventHandler<IsAvailableChangedEventArgs> IsAvailableChanged;
 
+        private Microsoft.Kinect.KinectSensor realKinectSensor;
+
         public KinectSensor()
         {
-            DepthFrameSource = new DepthFrameSource();
+            try
+            {
+                realKinectSensor = Microsoft.Kinect.KinectSensor.GetDefault();
+                realKinectSensor.Open();
+                DepthFrameSource = new DepthFrameSource(realKinectSensor);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("No real Kinect found. Initializing Player without Kinect.");
+                DepthFrameSource = new DepthFrameSource();
+            }
         }
 
         public void Open()
@@ -36,7 +47,5 @@ namespace KinectDummy
         {
             return new KinectSensor();
         }
-
-        //public void setRealKinectSensor()
     }
 }

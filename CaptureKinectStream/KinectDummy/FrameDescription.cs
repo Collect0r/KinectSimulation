@@ -12,13 +12,7 @@ namespace KinectDummy
         public int Height { get; } //424 underlaying buffer
 
         public uint BytesPerPixel { get; } = 2;
-
-        /*using (KinectDummy.KinectBuffer depthBuffer = DepthFrame.LockImageBuffer()) {
-    
-    depthBuffer.UnderlyingBuffer}
-
-        public int Height { get; } // 424*/
-
+        
         public FrameDescription()
         {
             Width = 512;

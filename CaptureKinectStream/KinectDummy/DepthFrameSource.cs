@@ -11,6 +11,12 @@ namespace KinectDummy
         public FrameDescription FrameDescription { get; }
         private DepthFrameReader depthFrameReader;
 
+        public DepthFrameSource(Microsoft.Kinect.KinectSensor realKinectSensor)
+        {
+            FrameDescription = new FrameDescription();
+            depthFrameReader = new DepthFrameReader(realKinectSensor);
+        }
+
         public DepthFrameSource()
         {
             FrameDescription = new FrameDescription();

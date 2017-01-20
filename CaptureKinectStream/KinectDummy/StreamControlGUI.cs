@@ -306,5 +306,9 @@ namespace KinectDummy
                 return milliseconds;
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            depthFrameReader.toggleStreamLiveFrames();
+        }
     }
 }

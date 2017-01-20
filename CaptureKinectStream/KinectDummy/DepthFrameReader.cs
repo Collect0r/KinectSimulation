@@ -59,6 +59,16 @@ namespace KinectDummy
 
         private long fileLengthMilliseconds;
 
+        private Microsoft.Kinect.KinectSensor realKinectSensor { get; } = null;
+        private Microsoft.Kinect.DepthFrameReader realDepthFrameReader { get; } = null;
+
+        public DepthFrameReader(Microsoft.Kinect.KinectSensor realKinectSensor) : this()
+        {
+            this.realKinectSensor = realKinectSensor;
+            realDepthFrameReader = realKinectSensor.DepthFrameSource.OpenReader();
+            realKinectSensor.Open();
+        }
+
         public DepthFrameReader()
         {
             //ushort Min = 2000;
@@ -79,7 +89,7 @@ namespace KinectDummy
             if (!initiallyStarted)
                 return;
 
-            requestFullQueueAccess(); // may freeze everything??
+            requestFullQueueAccess(); // may freeze everything?? nvm
             
             Tuple<long, ushort[]> tempPosition;
             bool success = concurrentReadingQueue.TryDequeue(out tempPosition);
@@ -293,16 +303,25 @@ namespace KinectDummy
         }
 
         private int counter = 0;
+        private bool streamLiveFrames = false;
+        DepthFrame liveDepthFrame;
+        ushort[] realFrameDataAsArray = new ushort[new FrameDescription().Height* new FrameDescription().Width];
         public void kickFrameArrivedEvent(object sender, EventArgs e)
         {
             if (sensorOpened && FrameArrived != null && currentDepthFrame != null)
             {
+                if (streamLiveFrames)
+                {
+                    realDepthFrameReader.AcquireLatestFrame().CopyFrameDataToArray(realFrameDataAsArray);
+                    liveDepthFrame = new DepthFrame(realFrameDataAsArray);
+                }
+
+                //async call of every listener
                 var eventListeners = FrameArrived.GetInvocationList();
-                
                 for (int i = 0; i < eventListeners.Count(); i++)
                 {
                     var methodToInvoke = (EventHandler<DepthFrameArrivedEventArgs>)eventListeners[i];
-                    methodToInvoke.BeginInvoke(this, new DepthFrameArrivedEventArgs(currentDepthFrame), null, null);
+                    methodToInvoke.BeginInvoke(this, new DepthFrameArrivedEventArgs(streamLiveFrames ? liveDepthFrame : currentDepthFrame), null, null);
                 }
 
                 Console.WriteLine(counter++ + " kicked");
@@ -425,6 +444,11 @@ namespace KinectDummy
         public long getFileSizeInMS()
         {
             return transformBytesToMilliseconds(fileSizeInBytes);
+        }
+
+        public void toggleStreamLiveFrames()
+        {
+            streamLiveFrames = !streamLiveFrames;
         }
     }
 }
