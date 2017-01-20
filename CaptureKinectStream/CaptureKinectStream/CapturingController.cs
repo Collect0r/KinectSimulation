@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using Microsoft.Kinect;
-using KinectDummy;
+using Microsoft.Kinect;
+//using KinectDummy;
 using System.Timers;
 using System.IO;
 using System.Threading;
@@ -12,11 +12,10 @@ using System.Diagnostics;
 
 namespace CaptureKinectStream
 {
-    internal class CapturingController
+    public class CapturingController
     {
         private static Stopwatch sw;
-
-        private bool currentlyCapturing = false;
+        
         private KinectSensor kinect;
         private DepthFrameReader depthFrameReader;
         private DepthFrame depthFrame;
@@ -26,7 +25,7 @@ namespace CaptureKinectStream
         private bool firstFrame = true;
         private int secondsToCapture;
 
-        internal CapturingController(KinectSensor kinect)
+        public CapturingController(KinectSensor kinect)
         {
             if (kinect == null)
                 throw new InvalidOperationException("Can't start capturing kinect frames because KinectSensor was null.");
@@ -34,7 +33,7 @@ namespace CaptureKinectStream
             this.kinect = kinect;
         }
 
-        internal void startCapturing(String filePath, int secondsToCapture = 0)
+        public void startCapturing(String filePath, int secondsToCapture = 0)
         {
             this.secondsToCapture = secondsToCapture;
 
@@ -47,15 +46,19 @@ namespace CaptureKinectStream
             DataStreamHandler.startWritingQueueToFile(filePath);
 
             depthFrameReader = kinect.DepthFrameSource.OpenReader();
-            depthFrameReader.FrameArrived += depthDataReadyEventHandler;
+            //depthFrameReader.FrameArrived += depthDataReadyEventHandler;
+            currentlyCapturing = true;
         }
 
-        internal void stopCapturing()
+        public void stopCapturing()
         {
             sw.Stop();
+            sw.Reset();
             DataStreamHandler.requestWriteStop();
-            depthFrameReader.FrameArrived -= depthDataReadyEventHandler;
-            
+            //depthFrameReader.FrameArrived -= depthDataReadyEventHandler;
+            currentlyCapturing = false;
+            firstFrame = true;
+
             //Console.WriteLine("STOPPED");
         }
 
@@ -74,12 +77,36 @@ namespace CaptureKinectStream
             }
             else
             {
-                e.FrameReference.AcquireFrame().CopyFrameDataToArray(ref depthFrameAsArray);
+                e.FrameReference.AcquireFrame().CopyFrameDataToArray(/*ref*/ depthFrameAsArray);
                 
                 DataStreamHandler.addFrameToQueue(depthFrameAsArray);
             }
+        }
 
+        private bool currentlyCapturing = false;
 
+        public void recordThisFrame(DepthFrame currentFrame)
+        {
+            if (firstFrame)
+            {
+                firstFrame = false;
+                sw.Start();
+            }
+
+            if (currentlyCapturing)
+            {
+                // if secondsToCapture == 0 then the capturing stops only if the user clicks the stop-button
+                if (secondsToCapture > 0 && sw.ElapsedMilliseconds > 1000 * secondsToCapture)
+                {
+                    stopCapturing();
+                }
+                else
+                {
+                    currentFrame.CopyFrameDataToArray(/*ref*/ depthFrameAsArray);
+
+                    DataStreamHandler.addFrameToQueue(depthFrameAsArray);
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using KinectDummy;
+﻿//using KinectDummy;
+using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,12 @@ namespace CaptureKinectStream
     {
         public static void startController(KinectSensor kinect)
         {
-            GUIControl.startGUIParallel(new CapturingController(kinect));
+            GUIControl.startGUIParallel(kinect);
+        }
+
+        public static void recordThisFrame(DepthFrame currentFrame)
+        {
+            GUIControl.recordThisFrame(currentFrame);
         }
     }
 }

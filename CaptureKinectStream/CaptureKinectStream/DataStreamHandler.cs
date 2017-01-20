@@ -8,12 +8,13 @@ using System.IO.Compression;
 using System.Threading;
 using System.Diagnostics;
 using System.Collections.Concurrent;
-using KinectDummy;
+//using KinectDummy;
+using Microsoft.Kinect;
 
 namespace CaptureKinectStream
 {
     // TODO: non public
-    internal static class DataStreamHandler
+    public static class DataStreamHandler
     {
         static int counter = 0;
         static int counter2 = 0;
@@ -22,19 +23,19 @@ namespace CaptureKinectStream
         private static bool writeStopRequested = true;
         private static int unsuccessfulTries = 0; 
 
-        internal static void requestWriteStop()
+        public static void requestWriteStop()
         {
             writeStopRequested = true;
         }
 
-        internal static void addFrameToQueue(ushort[] frame)
+        public static void addFrameToQueue(ushort[] frame)
         {
             concurrentWritingQueue.Enqueue(frame);
             
             Console.WriteLine(counter2++ + " enqueued");
         }
 
-        internal static void startWritingQueueToFile(String filePathNew)
+        public static void startWritingQueueToFile(String filePathNew)
         {
             writeStopRequested = false;
             filePath = filePathNew;

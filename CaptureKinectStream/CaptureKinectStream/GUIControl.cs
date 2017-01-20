@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Kinect;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,21 +9,23 @@ using System.Windows.Forms;
 
 namespace CaptureKinectStream
 {
-    internal static class GUIControl
+    public static class GUIControl
     {
-        private static CapturingController captureController;
+        private static CapturingController captureController = null;
+
+        private static KinectSensor thisKinect;
 
         private static CaptureControlGUI gui;
 
-        internal static void startGUIParallel(CapturingController kinectCapturing)
+        public static void startGUIParallel(KinectSensor kinect)
         {
-            if (kinectCapturing == null)
-                throw new InvalidOperationException("KinectCapturing must be initialized.");
+            if (kinect == null)
+                throw new InvalidOperationException("Kinect not found.");
 
             if (captureController != null)
                 throw new InvalidOperationException("GUI already started!");
 
-            captureController = kinectCapturing;
+            thisKinect = kinect;
 
             Thread thread = new Thread(startGUI);
             thread.SetApartmentState(ApartmentState.STA);
@@ -31,13 +34,20 @@ namespace CaptureKinectStream
 
         private static void startGUI()
         {
+            captureController = new CapturingController(thisKinect);
             gui = new CaptureControlGUI(captureController);
             Application.Run(gui);
         }
 
-        internal static CaptureControlGUI getGUI()
+        public static CaptureControlGUI getGUI()
         {
             return gui;
+        }
+
+        public static void recordThisFrame(DepthFrame currentFrame)
+        {
+            if (captureController != null)
+                captureController.recordThisFrame(currentFrame);
         }
     }
 }

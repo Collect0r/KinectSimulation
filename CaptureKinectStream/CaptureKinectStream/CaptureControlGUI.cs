@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace CaptureKinectStream
 {
-    internal partial class CaptureControlGUI : Form
+    public partial class CaptureControlGUI : Form
     {
         private bool currentlyRecording = false;
 
@@ -24,7 +24,7 @@ namespace CaptureKinectStream
 
         private delegate void stopRecordingCallbackDelegate();
 
-        internal CaptureControlGUI(CapturingController captureController)
+        public CaptureControlGUI(CapturingController captureController)
         {
             InitializeComponent();
 
@@ -41,7 +41,7 @@ namespace CaptureKinectStream
             this.captureController = captureController;
         }
 
-        internal void sendStopRecordingCallback()
+        public void sendStopRecordingCallback()
         {
             Invoke(new stopRecordingCallbackDelegate(displayRecordingStopped));
         }
