@@ -23,7 +23,6 @@ namespace KinectDummy
             try
             {
                 realKinectSensor = Microsoft.Kinect.KinectSensor.GetDefault();
-                realKinectSensor.Open();
                 DepthFrameSource = new DepthFrameSource(realKinectSensor);
             }
             catch (Exception e)
@@ -35,12 +34,14 @@ namespace KinectDummy
 
         public void Open()
         {
-            
+            if (realKinectSensor != null)
+                realKinectSensor.Open();
         }
 
         public void Close()
         {
-
+            if (realKinectSensor != null)
+                realKinectSensor.Close();
         }
 
         public static KinectSensor GetDefault()

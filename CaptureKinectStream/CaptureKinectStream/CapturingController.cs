@@ -79,8 +79,15 @@ namespace CaptureKinectStream
             {
                 using (DepthFrame tempRealDepthFrame = e.FrameReference.AcquireFrame())
                 {
-                    tempRealDepthFrame.CopyFrameDataToArray(/*ref*/ depthFrameAsArray);
-                    DataStreamHandler.addFrameToQueue(depthFrameAsArray);
+                    if (tempRealDepthFrame != null)
+                    {
+                        tempRealDepthFrame.CopyFrameDataToArray(/*ref*/ depthFrameAsArray);
+                        DataStreamHandler.addFrameToQueue(depthFrameAsArray);
+                    }
+                    else
+                    {
+                        Console.WriteLine("nope");
+                    }
                 }
             }
         }
@@ -89,14 +96,14 @@ namespace CaptureKinectStream
 
         public void recordThisFrame(DepthFrame currentFrame)
         {
-            if (firstFrame)
-            {
-                firstFrame = false;
-                sw.Start();
-            }
-
             if (currentlyCapturing)
             {
+                if (firstFrame)
+                {
+                    firstFrame = false;
+                    sw.Start();
+                }
+
                 // if secondsToCapture == 0 then the capturing stops only if the user clicks the stop-button
                 if (secondsToCapture > 0 && sw.ElapsedMilliseconds > 1000 * secondsToCapture)
                 {

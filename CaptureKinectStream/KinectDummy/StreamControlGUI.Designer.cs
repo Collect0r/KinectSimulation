@@ -44,15 +44,16 @@
             this.unitLabelTwo = new System.Windows.Forms.Label();
             this.unitLabelOne = new System.Windows.Forms.Label();
             this.unitLabelThree = new System.Windows.Forms.Label();
-            this.selectionRangeSlider1 = new KinectDummy.SelectionRangeSlider();
             this.button1 = new System.Windows.Forms.Button();
+            this.currentModeLabel = new System.Windows.Forms.Label();
+            this.selectionRangeSlider1 = new KinectDummy.SelectionRangeSlider();
             ((System.ComponentModel.ISupportInitialize)(this.fpsSetter)).BeginInit();
             this.SuspendLayout();
             // 
             // chooseFileButton
             // 
-            this.chooseFileButton.Location = new System.Drawing.Point(146, 113);
-            this.chooseFileButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.chooseFileButton.Location = new System.Drawing.Point(152, 113);
+            this.chooseFileButton.Margin = new System.Windows.Forms.Padding(2);
             this.chooseFileButton.Name = "chooseFileButton";
             this.chooseFileButton.Size = new System.Drawing.Size(105, 27);
             this.chooseFileButton.TabIndex = 0;
@@ -62,8 +63,8 @@
             // 
             // toggleStreamButton
             // 
-            this.toggleStreamButton.Location = new System.Drawing.Point(151, 325);
-            this.toggleStreamButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.toggleStreamButton.Location = new System.Drawing.Point(151, 385);
+            this.toggleStreamButton.Margin = new System.Windows.Forms.Padding(2);
             this.toggleStreamButton.Name = "toggleStreamButton";
             this.toggleStreamButton.Size = new System.Drawing.Size(106, 41);
             this.toggleStreamButton.TabIndex = 1;
@@ -110,7 +111,7 @@
             // 
             this.fpsLabel.AutoSize = true;
             this.fpsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.fpsLabel.Location = new System.Drawing.Point(128, 177);
+            this.fpsLabel.Location = new System.Drawing.Point(126, 237);
             this.fpsLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.fpsLabel.Name = "fpsLabel";
             this.fpsLabel.Size = new System.Drawing.Size(157, 17);
@@ -119,8 +120,8 @@
             // 
             // fpsSetter
             // 
-            this.fpsSetter.Location = new System.Drawing.Point(180, 196);
-            this.fpsSetter.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.fpsSetter.Location = new System.Drawing.Point(180, 256);
+            this.fpsSetter.Margin = new System.Windows.Forms.Padding(2);
             this.fpsSetter.Name = "fpsSetter";
             this.fpsSetter.Size = new System.Drawing.Size(36, 20);
             this.fpsSetter.TabIndex = 12;
@@ -133,8 +134,8 @@
             // 
             // upperBoundBox
             // 
-            this.upperBoundBox.Location = new System.Drawing.Point(358, 279);
-            this.upperBoundBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.upperBoundBox.Location = new System.Drawing.Point(358, 339);
+            this.upperBoundBox.Margin = new System.Windows.Forms.Padding(2);
             this.upperBoundBox.Name = "upperBoundBox";
             this.upperBoundBox.Size = new System.Drawing.Size(44, 20);
             this.upperBoundBox.TabIndex = 15;
@@ -143,8 +144,8 @@
             // 
             // currentPositionBox
             // 
-            this.currentPositionBox.Location = new System.Drawing.Point(181, 279);
-            this.currentPositionBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.currentPositionBox.Location = new System.Drawing.Point(181, 339);
+            this.currentPositionBox.Margin = new System.Windows.Forms.Padding(2);
             this.currentPositionBox.Name = "currentPositionBox";
             this.currentPositionBox.Size = new System.Drawing.Size(49, 20);
             this.currentPositionBox.TabIndex = 16;
@@ -153,8 +154,8 @@
             // 
             // lowerBoundBox
             // 
-            this.lowerBoundBox.Location = new System.Drawing.Point(9, 279);
-            this.lowerBoundBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lowerBoundBox.Location = new System.Drawing.Point(9, 339);
+            this.lowerBoundBox.Margin = new System.Windows.Forms.Padding(2);
             this.lowerBoundBox.Name = "lowerBoundBox";
             this.lowerBoundBox.Size = new System.Drawing.Size(44, 20);
             this.lowerBoundBox.TabIndex = 17;
@@ -162,8 +163,8 @@
             // 
             // freezeButton
             // 
-            this.freezeButton.Location = new System.Drawing.Point(270, 330);
-            this.freezeButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.freezeButton.Location = new System.Drawing.Point(270, 390);
+            this.freezeButton.Margin = new System.Windows.Forms.Padding(2);
             this.freezeButton.Name = "freezeButton";
             this.freezeButton.Size = new System.Drawing.Size(86, 29);
             this.freezeButton.TabIndex = 18;
@@ -185,8 +186,8 @@
             // 
             // measureUnitButton
             // 
-            this.measureUnitButton.Location = new System.Drawing.Point(52, 331);
-            this.measureUnitButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.measureUnitButton.Location = new System.Drawing.Point(52, 391);
+            this.measureUnitButton.Margin = new System.Windows.Forms.Padding(2);
             this.measureUnitButton.Name = "measureUnitButton";
             this.measureUnitButton.Size = new System.Drawing.Size(86, 29);
             this.measureUnitButton.TabIndex = 20;
@@ -196,7 +197,7 @@
             // 
             // unitLabelTwo
             // 
-            this.unitLabelTwo.Location = new System.Drawing.Point(181, 298);
+            this.unitLabelTwo.Location = new System.Drawing.Point(181, 358);
             this.unitLabelTwo.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.unitLabelTwo.Name = "unitLabelTwo";
             this.unitLabelTwo.Size = new System.Drawing.Size(48, 14);
@@ -206,7 +207,7 @@
             // 
             // unitLabelOne
             // 
-            this.unitLabelOne.Location = new System.Drawing.Point(7, 298);
+            this.unitLabelOne.Location = new System.Drawing.Point(7, 358);
             this.unitLabelOne.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.unitLabelOne.Name = "unitLabelOne";
             this.unitLabelOne.Size = new System.Drawing.Size(48, 14);
@@ -216,7 +217,7 @@
             // 
             // unitLabelThree
             // 
-            this.unitLabelThree.Location = new System.Drawing.Point(356, 298);
+            this.unitLabelThree.Location = new System.Drawing.Point(356, 358);
             this.unitLabelThree.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.unitLabelThree.Name = "unitLabelThree";
             this.unitLabelThree.Size = new System.Drawing.Size(48, 14);
@@ -224,9 +225,30 @@
             this.unitLabelThree.Text = "ms";
             this.unitLabelThree.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(155, 171);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(102, 23);
+            this.button1.TabIndex = 25;
+            this.button1.Text = "Toggle Mode";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // currentModeLabel
+            // 
+            this.currentModeLabel.ForeColor = System.Drawing.Color.DarkGray;
+            this.currentModeLabel.Location = new System.Drawing.Point(9, 197);
+            this.currentModeLabel.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.currentModeLabel.Name = "currentModeLabel";
+            this.currentModeLabel.Size = new System.Drawing.Size(392, 16);
+            this.currentModeLabel.TabIndex = 26;
+            this.currentModeLabel.Text = "Current Mode: LIVE";
+            this.currentModeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // selectionRangeSlider1
             // 
-            this.selectionRangeSlider1.Location = new System.Drawing.Point(9, 236);
+            this.selectionRangeSlider1.Location = new System.Drawing.Point(9, 296);
             this.selectionRangeSlider1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.selectionRangeSlider1.Max = ((long)(100));
             this.selectionRangeSlider1.Min = ((long)(0));
@@ -241,21 +263,12 @@
             this.selectionRangeSlider1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.selectionRangeSlider1_MouseDown);
             this.selectionRangeSlider1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.selectionRangeSlider1_MouseUp);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(318, 137);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 25;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // StreamControlGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(410, 379);
+            this.ClientSize = new System.Drawing.Size(410, 434);
+            this.Controls.Add(this.currentModeLabel);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.unitLabelThree);
             this.Controls.Add(this.unitLabelOne);
@@ -274,7 +287,7 @@
             this.Controls.Add(this.headline1);
             this.Controls.Add(this.toggleStreamButton);
             this.Controls.Add(this.chooseFileButton);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "StreamControlGUI";
             this.Text = "StreamControlGUI";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StreamControlGUI_FormClosing);
@@ -304,5 +317,6 @@
         private System.Windows.Forms.Label unitLabelOne;
         private System.Windows.Forms.Label unitLabelThree;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label currentModeLabel;
     }
 }

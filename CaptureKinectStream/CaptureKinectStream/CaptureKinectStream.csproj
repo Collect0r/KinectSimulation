@@ -67,12 +67,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\KinectDummy\KinectStream.csproj">
-      <Project>{d0d0c22a-ab76-4b1f-8cd6-5dae42396b62}</Project>
-      <Name>KinectStream</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="CaptureControlGUI.resx">
       <DependentUpon>CaptureControlGUI.cs</DependentUpon>
     </EmbeddedResource>
