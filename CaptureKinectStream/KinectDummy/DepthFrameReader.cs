@@ -62,11 +62,15 @@ namespace KinectDummy
         private Microsoft.Kinect.KinectSensor realKinectSensor { get; } = null;
         private Microsoft.Kinect.DepthFrameReader realDepthFrameReader { get; } = null;
 
+        public bool realKinectSet { get; } = false;
+
         public DepthFrameReader(Microsoft.Kinect.KinectSensor realKinectSensor) : this()
         {
             this.realKinectSensor = realKinectSensor;
             realDepthFrameReader = realKinectSensor.DepthFrameSource.OpenReader();
             realKinectSensor.Open();
+            realDepthFrameReader.FrameArrived += realFrameArrived;
+            realKinectSet = true;
         }
 
         public DepthFrameReader()
@@ -236,12 +240,25 @@ namespace KinectDummy
                 initiallyStarted = true;
             }
         }
-        
+
         public void pauseStreamingByGUI()
         {
             detachEventsFromTimers();
             pauseStreamingRequested = true;
             currentlyDequeing = false;
+        }
+
+        public void startStreamingSolelyLiveFrames(int fps)
+        {
+            changeFPS(fps);
+            frameArrivedTimer.Elapsed += kickFrameArrivedEvent;
+            frameArrivedTimer.Start();
+        }
+
+        public void pauseStreamingSolelyLiveFrames()
+        {
+            frameArrivedTimer.Elapsed -= kickFrameArrivedEvent;
+            frameArrivedTimer.Stop();
         }
 
         public void setSavedStreamFilePath(String savedStreamFilePath)
@@ -306,32 +323,55 @@ namespace KinectDummy
         private bool streamLiveFrames = false;
         DepthFrame liveDepthFrame;
         ushort[] realFrameDataAsArray = new ushort[new FrameDescription().Height* new FrameDescription().Width];
+        bool newRealFrame = false;
+
         public void kickFrameArrivedEvent(object sender, EventArgs e)
         {
-            if (sensorOpened && FrameArrived != null && currentDepthFrame != null)
+            if (sensorOpened && FrameArrived != null)
             {
-                if (streamLiveFrames)
-                {
-                    using (Microsoft.Kinect.DepthFrame tempRealDepthFrame = realDepthFrameReader.AcquireLatestFrame())
-                    {
-                        tempRealDepthFrame.CopyFrameDataToArray(realFrameDataAsArray);
-                        liveDepthFrame = new DepthFrame(realFrameDataAsArray);
-                    }
-                }
-
                 //async call of every listener
                 var eventListeners = FrameArrived.GetInvocationList();
                 for (int i = 0; i < eventListeners.Count(); i++)
                 {
                     var methodToInvoke = (EventHandler<DepthFrameArrivedEventArgs>)eventListeners[i];
-                    methodToInvoke.BeginInvoke(this, new DepthFrameArrivedEventArgs(streamLiveFrames ? liveDepthFrame : currentDepthFrame), null, null);
+
+                    DepthFrameArrivedEventArgs depthEvent = null;
+                    if ((streamLiveFrames && newRealFrame))
+                    {
+                        depthEvent = new DepthFrameArrivedEventArgs(liveDepthFrame);
+                        newRealFrame = false;
+                        Console.WriteLine("live"/*counter++ + " kicked"*/);
+                    }
+                    else if (!streamLiveFrames && currentDepthFrame != null)
+                    {
+                        depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame);
+                        Console.WriteLine("recorded"/*counter++ + " kicked"*/);
+                    }
+
+                    if (depthEvent != null)
+                        methodToInvoke.BeginInvoke(this, depthEvent, null, null);
                 }
 
-                Console.WriteLine(counter++ + " kicked");
             }
 
-           // if (currentFrame != null)
-                //Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (streamed)");
+            // if (currentFrame != null)
+            //Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (streamed)");
+        }
+
+        private void realFrameArrived(object sender, Microsoft.Kinect.DepthFrameArrivedEventArgs e)
+        {
+            if (streamLiveFrames)
+            {
+                using (Microsoft.Kinect.DepthFrame tempRealDepthFrame = realDepthFrameReader.AcquireLatestFrame())
+                {
+                    if (tempRealDepthFrame != null)
+                    {
+                        tempRealDepthFrame.CopyFrameDataToArray(realFrameDataAsArray);
+                        liveDepthFrame = new DepthFrame(realFrameDataAsArray);
+                        newRealFrame = true;
+                    }
+                }
+            }
         }
 
         private void EndAsyncEvent(IAsyncResult iar)
@@ -455,6 +495,11 @@ namespace KinectDummy
         public void toggleStreamLiveFrames()
         {
             streamLiveFrames = !streamLiveFrames;
+
+            if (streamLiveFrames)
+                pauseStreamingRequested = true;
+            else
+                pauseStreamingRequested = false;
         }
     }
 }

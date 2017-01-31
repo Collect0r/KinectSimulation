@@ -13,20 +13,13 @@ namespace CaptureKinectStream
     {
         private static CapturingController captureController = null;
 
-        private static KinectSensor thisKinect;
-
         private static CaptureControlGUI gui;
 
-        public static void startGUIParallel(KinectSensor kinect)
+        public static void startGUIParallel()
         {
-            if (kinect == null)
-                throw new InvalidOperationException("Kinect not found.");
-
             if (captureController != null)
                 throw new InvalidOperationException("GUI already started!");
-
-            thisKinect = kinect;
-
+            
             Thread thread = new Thread(startGUI);
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
@@ -34,7 +27,7 @@ namespace CaptureKinectStream
 
         private static void startGUI()
         {
-            captureController = new CapturingController(thisKinect);
+            captureController = new CapturingController();
             gui = new CaptureControlGUI(captureController);
             Application.Run(gui);
         }
@@ -45,6 +38,12 @@ namespace CaptureKinectStream
         }
 
         public static void recordThisFrame(DepthFrame currentFrame)
+        {
+            if (captureController != null)
+                captureController.recordThisFrame(currentFrame);
+        }
+
+        public static void recordThisFrame(KinectDummy.DepthFrame currentFrame)
         {
             if (captureController != null)
                 captureController.recordThisFrame(currentFrame);

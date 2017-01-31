@@ -13,8 +13,10 @@ namespace KinectDummy
     public partial class StreamControlGUI : Form
     {
         enum SliderValueChangeType { SelectedBound, SelectedValue }
+        enum DataSourceMode { realKinect, recordedData, both }
 
         private String savedKinectStreamFilePath;
+        private String savedKinectStreamFolderPath;
         private DepthFrameReader depthFrameReader;
         private bool currentlyStreaming = false;
         private bool mouseDown = false;
@@ -26,6 +28,8 @@ namespace KinectDummy
         private bool changedByReader = false;
         private bool temporaryUpdateStop = false;
         private bool showFramesInsteadOfMS = false;
+        private DataSourceMode dataSourceMode;
+        private bool solelyStreamLiveFrames;
 
         private delegate void updateTimeBarDelegate();
 
@@ -33,28 +37,33 @@ namespace KinectDummy
         {
             this.depthFrameReader = depthFrameReader;
             InitializeComponent();
-
+            
             if (Properties.Settings.Default.StreamFilePath != "null")
             {
-                savedKinectStreamFilePath = Properties.Settings.Default.StreamFilePath;
-                fileSetLabel.Text = savedKinectStreamFilePath;
-                fileSetLabel.Visible = true;
-                toggleStreamButton.Enabled = true;
-                freezeButton.Enabled = true;
+                savedKinectStreamFolderPath = Properties.Settings.Default.StreamFilePath;
             }
             else
             {
-                freezeButton.Enabled = false;
-                toggleStreamButton.Enabled = false;
+                savedKinectStreamFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             }
 
+            if (depthFrameReader.realKinectSet)
+            {
+                onlyRealKinectButton.Enabled = true;
+                bothDataSourcesButton.Enabled = true;
+            }
         }
 
         private void chooseFileButton_Click(object sender, EventArgs e)
         {
+            openFileDialog();
+        }
+
+        private void openFileDialog()
+        {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
-            openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            openFileDialog1.InitialDirectory = savedKinectStreamFolderPath;
             openFileDialog1.Filter = "kinect files (*.kcs)|*.kcs";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
@@ -62,10 +71,10 @@ namespace KinectDummy
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 savedKinectStreamFilePath = openFileDialog1.FileName;
-                Properties.Settings.Default.StreamFilePath = savedKinectStreamFilePath;
+                savedKinectStreamFolderPath = System.IO.Path.GetDirectoryName(savedKinectStreamFilePath);
+                Properties.Settings.Default.StreamFilePath = savedKinectStreamFolderPath;
                 Properties.Settings.Default.Save();
                 fileSetLabel.Text = savedKinectStreamFilePath;
-                freezeButton.Enabled = true;
                 fileSetLabel.Visible = true;
                 toggleStreamButton.Enabled = true;
             }
@@ -73,36 +82,74 @@ namespace KinectDummy
 
         private void toggleStreamButton_Click(object sender, EventArgs e)
         {
-            if (currentlyStreaming)
+            if (!solelyStreamLiveFrames)
             {
-                toggleStreamButton.Text = "Start Streaming";
-                depthFrameReader.pauseStreamingByGUI();
-                updateGUItimer.Elapsed -= invokeUpdateTimeBar;
-                updateGUItimer.Stop();
-            }
-            else
-            {
-                toggleStreamButton.Text = "Pause Streaming";
-                depthFrameReader.setSavedStreamFilePath(savedKinectStreamFilePath);
-
-                if (firstStart)
+                if (currentlyStreaming)
                 {
-                    fileLengthMS = depthFrameReader.getFileSizeInMS();
-                    selectionRangeSlider1.Max = fileLengthMS;
-                    selectionRangeSlider1.Min = 0;
-                    selectionRangeSlider1.SelectedMax = fileLengthMS;
-                    upperBoundBox.Text = transformMillisecondsToFrames(fileLengthMS).ToString();
-                    lowerBoundBox.Text = "0";
+                    toggleStreamButton.Text = "Start Streaming";
+                    depthFrameReader.pauseStreamingByGUI();
+                    updateGUItimer.Elapsed -= invokeUpdateTimeBar;
+                    updateGUItimer.Stop();
+                }
+                else
+                {
+                    toggleStreamButton.Text = "Pause Streaming";
+                    depthFrameReader.setSavedStreamFilePath(savedKinectStreamFilePath);
+
+                    if (firstStart)
+                    {
+                        selectionRangeSlider1.Visible = true;
+                        lowerBoundBox.Visible = true;
+                        currentPositionBox.Visible = true;
+                        upperBoundBox.Visible = true;
+                        unitLabelOne.Visible = true;
+                        unitLabelTwo.Visible = true;
+                        unitLabelThree.Visible = true;
+                        measureUnitButton.Enabled = true;
+                        freezeButton.Enabled = true;
+                        button1.Enabled = true;
+
+                        if (depthFrameReader.realKinectSet)
+                        {
+                            button1.Enabled = true;
+                            currentModeLabel.Visible = true;
+                        }
+
+                        fileLengthMS = depthFrameReader.getFileSizeInMS();
+                        selectionRangeSlider1.Max = fileLengthMS;
+                        selectionRangeSlider1.Min = 0;
+                        selectionRangeSlider1.SelectedMax = fileLengthMS;
+                        upperBoundBox.Text = transformMillisecondsToFrames(fileLengthMS).ToString();
+                        lowerBoundBox.Text = "0";
+                    }
+
+                    depthFrameReader.startStreaming(fps);
+
+                    updateGUItimer.Elapsed += invokeUpdateTimeBar;
+                    updateGUItimer.Start();
+
+                    firstStart = false;
                 }
 
-                depthFrameReader.startStreaming(fps);
-
-                updateGUItimer.Elapsed += invokeUpdateTimeBar;
-                updateGUItimer.Start();
-
-                firstStart = false;
+                currentlyStreaming = !currentlyStreaming;
             }
-            currentlyStreaming = !currentlyStreaming;
+            else // solelyStreamLiveFrames
+            {
+                if (currentlyStreaming)
+                {
+                    toggleStreamButton.Text = "Start Streaming";
+                    depthFrameReader.pauseStreamingSolelyLiveFrames();
+                }
+                else
+                {
+                    toggleStreamButton.Text = "Pause Streaming";
+                    
+                    depthFrameReader.startStreamingSolelyLiveFrames(fps);
+                }
+
+                currentlyStreaming = !currentlyStreaming;
+            }
+            
         }
 
 
@@ -308,7 +355,70 @@ namespace KinectDummy
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (dataSourceMode == DataSourceMode.realKinect)
+                changeDataSourceMode(DataSourceMode.recordedData);
+            else
+                changeDataSourceMode(DataSourceMode.realKinect);
+
             depthFrameReader.toggleStreamLiveFrames();
+        }
+
+        private void changeDataSourceMode(DataSourceMode newDSM)
+        {
+            dataSourceMode = newDSM;
+
+            if (dataSourceMode == DataSourceMode.realKinect)
+            {
+                currentModeLabel.Text = "Streaming Live Frames";
+            }
+            else
+            {
+                currentModeLabel.Text = "Streaming Recorded Frames";
+            }
+
+            currentModeLabel.Visible = true;
+        }
+
+        private void onlyRealKinectButton_Click(object sender, EventArgs e)
+        {
+            changeDataSourceMode(DataSourceMode.realKinect);
+
+            onlyRecordedDataButton.Visible = false;
+            bothDataSourcesButton.Visible = false;
+            onlyRealKinectButton.Enabled = false;
+
+            solelyStreamLiveFrames = true;
+            toggleStreamButton.Enabled = true;
+            depthFrameReader.toggleStreamLiveFrames();
+        }
+
+        private void bothDataSourcesButton_Click(object sender, EventArgs e)
+        {
+            changeDataSourceMode(DataSourceMode.recordedData);
+
+            openFileDialog();
+
+            onlyRealKinectButton.Visible = false;
+            onlyRecordedDataButton.Visible = false;
+            bothDataSourcesButton.Enabled = false;
+
+            button1.Visible = true;
+            button1.Enabled = false;
+
+            solelyStreamLiveFrames = false;
+        }
+
+        private void onlyRecordedDataButton_Click(object sender, EventArgs e)
+        {
+            changeDataSourceMode(DataSourceMode.recordedData);
+
+            openFileDialog();
+
+            onlyRealKinectButton.Visible = false;
+            bothDataSourcesButton.Visible = false;
+            onlyRecordedDataButton.Enabled = false;
+
+            solelyStreamLiveFrames = false;
         }
     }
 }

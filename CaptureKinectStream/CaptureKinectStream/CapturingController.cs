@@ -16,36 +16,29 @@ namespace CaptureKinectStream
     {
         private static Stopwatch sw;
         
-        private KinectSensor kinect;
         private DepthFrameReader depthFrameReader;
-        private DepthFrame depthFrame;
         private ushort[] depthFrameAsArray;
         private int width;
         private int height;
         private bool firstFrame = true;
         private int secondsToCapture;
 
-        public CapturingController(KinectSensor kinect)
+        public CapturingController()
         {
-            if (kinect == null)
-                throw new InvalidOperationException("Can't start capturing kinect frames because KinectSensor was null.");
-
-            this.kinect = kinect;
         }
 
         public void startCapturing(String filePath, int secondsToCapture = 0)
         {
             this.secondsToCapture = secondsToCapture;
 
-            width = kinect.DepthFrameSource.FrameDescription.Width;
-            height = kinect.DepthFrameSource.FrameDescription.Height;
+            width = 512;
+            height = 424;
             depthFrameAsArray = new ushort[width * height];
             
             sw = new Stopwatch();
 
             DataStreamHandler.startWritingQueueToFile(filePath);
-
-            depthFrameReader = kinect.DepthFrameSource.OpenReader();
+            
             //depthFrameReader.FrameArrived += depthDataReadyEventHandler;
             currentlyCapturing = true;
         }
@@ -112,6 +105,30 @@ namespace CaptureKinectStream
                 else
                 {
                     currentFrame.CopyFrameDataToArray(/*ref*/ depthFrameAsArray);
+
+                    DataStreamHandler.addFrameToQueue(depthFrameAsArray);
+                }
+            }
+        }
+
+        public void recordThisFrame(KinectDummy.DepthFrame currentFrame)
+        {
+            if (currentlyCapturing)
+            {
+                if (firstFrame)
+                {
+                    firstFrame = false;
+                    sw.Start();
+                }
+
+                // if secondsToCapture == 0 then the capturing stops only if the user clicks the stop-button
+                if (secondsToCapture > 0 && sw.ElapsedMilliseconds > 1000 * secondsToCapture)
+                {
+                    stopCapturing();
+                }
+                else
+                {
+                    currentFrame.CopyFrameDataToArray(ref depthFrameAsArray);
 
                     DataStreamHandler.addFrameToQueue(depthFrameAsArray);
                 }

@@ -10,12 +10,17 @@ namespace CaptureKinectStream
 {
     public static class KinectDepthStreamRecorder
     {
-        public static void startController(KinectSensor kinect)
+        public static void startController()
         {
-            GUIControl.startGUIParallel(kinect);
+            GUIControl.startGUIParallel();
         }
 
         public static void recordThisFrame(DepthFrame currentFrame)
+        {
+            GUIControl.recordThisFrame(currentFrame);
+        }
+
+        public static void recordThisFrame(KinectDummy.DepthFrame currentFrame)
         {
             GUIControl.recordThisFrame(currentFrame);
         }
