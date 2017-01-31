@@ -64,7 +64,7 @@ namespace KinectDummy
 
         internal bool realKinectSet { get; } = false;
 
-        public DepthFrameReader(Microsoft.Kinect.KinectSensor realKinectSensor) : this()
+        internal DepthFrameReader(Microsoft.Kinect.KinectSensor realKinectSensor) : this()
         {
             this.realKinectSensor = realKinectSensor;
             realDepthFrameReader = realKinectSensor.DepthFrameSource.OpenReader();
@@ -73,7 +73,7 @@ namespace KinectDummy
             realKinectSet = true;
         }
 
-        public DepthFrameReader()
+        internal DepthFrameReader()
         {
             //ushort Min = 2000;
             //ushort Max = 6000;

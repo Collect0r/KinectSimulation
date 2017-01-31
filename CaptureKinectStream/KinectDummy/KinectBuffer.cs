@@ -14,7 +14,7 @@ namespace KinectDummy
 
         private GCHandle pinnedFrameData;
 
-        public KinectBuffer(ushort[] frameData)
+        internal KinectBuffer(ushort[] frameData)
         {
             pinnedFrameData = GCHandle.Alloc(frameData, GCHandleType.Pinned);
             UnderlyingBuffer = pinnedFrameData.AddrOfPinnedObject();

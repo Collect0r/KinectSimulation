@@ -12,8 +12,8 @@ namespace KinectDummy
         public int Height { get; } //424 underlaying buffer
 
         public uint BytesPerPixel { get; } = 2;
-        
-        public FrameDescription()
+
+        internal FrameDescription()
         {
             Width = 512;
             Height = 424;

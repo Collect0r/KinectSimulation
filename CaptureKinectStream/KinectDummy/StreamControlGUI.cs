@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace KinectDummy
 {
-    public partial class StreamControlGUI : Form
+    internal partial class StreamControlGUI : Form
     {
         enum SliderValueChangeType { SelectedBound, SelectedValue }
         enum DataSourceMode { realKinect, recordedData, both }
@@ -33,7 +33,7 @@ namespace KinectDummy
 
         private delegate void updateTimeBarDelegate();
 
-        public StreamControlGUI(DepthFrameReader depthFrameReader)
+        internal StreamControlGUI(DepthFrameReader depthFrameReader)
         {
             this.depthFrameReader = depthFrameReader;
             InitializeComponent();

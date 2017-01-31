@@ -10,7 +10,7 @@ namespace KinectDummy
     {
         private DepthFrame depthFrame;
 
-        public DepthFrameReference(DepthFrame depthFrame)
+        internal DepthFrameReference(DepthFrame depthFrame)
         {
             this.depthFrame = depthFrame;
         }

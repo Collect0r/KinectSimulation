@@ -10,7 +10,7 @@ namespace KinectDummy
     {
         public DepthFrameReference FrameReference { get; }
 
-        public DepthFrameArrivedEventArgs(DepthFrame depthFrame)
+        internal DepthFrameArrivedEventArgs(DepthFrame depthFrame)
         {
             FrameReference = new DepthFrameReference(depthFrame);
         }

@@ -8,11 +8,11 @@ using System.Windows.Forms;
 
 namespace KinectDummy
 {
-    public static class GUIControl
+    internal static class GUIControl
     {
         private static DepthFrameReader dfr;
 
-        public static void startGUIParallel(DepthFrameReader depthFrameReader)
+        internal static void startGUIParallel(DepthFrameReader depthFrameReader)
         {
             dfr = depthFrameReader;
             Thread thread = new Thread(startGUI);

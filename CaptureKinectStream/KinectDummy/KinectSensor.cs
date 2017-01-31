@@ -18,7 +18,7 @@ namespace KinectDummy
 
         private Microsoft.Kinect.KinectSensor realKinectSensor;
 
-        public KinectSensor()
+        internal KinectSensor()
         {
             try
             {
