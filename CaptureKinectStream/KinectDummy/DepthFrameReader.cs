@@ -366,8 +366,11 @@ namespace KinectDummy
                 {
                     if (tempRealDepthFrame != null)
                     {
-                        tempRealDepthFrame.CopyFrameDataToArray(realFrameDataAsArray);
-                        liveDepthFrame = new DepthFrame(realFrameDataAsArray);
+                        if (!freezeCurrentFrame)
+                        {
+                            tempRealDepthFrame.CopyFrameDataToArray(realFrameDataAsArray);
+                            liveDepthFrame = new DepthFrame(realFrameDataAsArray);
+                        }
                         newRealFrame = true;
                     }
                 }
