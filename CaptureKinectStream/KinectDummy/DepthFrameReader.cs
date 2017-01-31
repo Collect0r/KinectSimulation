@@ -22,7 +22,7 @@ namespace KinectDummy
 
 
         public event EventHandler<DepthFrameArrivedEventArgs> FrameArrived;
-        public BinaryReader streamReader;
+        internal BinaryReader streamReader;
 
         private String savedStreamFilePath;
 
@@ -47,7 +47,7 @@ namespace KinectDummy
         private AccurateTimer frameArrivedTimer;
         private AccurateTimer dequeueFrameTimer;
 
-        public static Stopwatch sw = new Stopwatch();
+        internal static Stopwatch sw = new Stopwatch();
 
         private DepthFrame currentDepthFrame;
 
@@ -62,7 +62,7 @@ namespace KinectDummy
         private Microsoft.Kinect.KinectSensor realKinectSensor { get; } = null;
         private Microsoft.Kinect.DepthFrameReader realDepthFrameReader { get; } = null;
 
-        public bool realKinectSet { get; } = false;
+        internal bool realKinectSet { get; } = false;
 
         public DepthFrameReader(Microsoft.Kinect.KinectSensor realKinectSensor) : this()
         {
@@ -88,7 +88,7 @@ namespace KinectDummy
             GUIControl.startGUIParallel(this);
         }
 
-        public void setRepeatingInterval(long lowerBoundMS, long upperBoundMS)
+        internal void setRepeatingInterval(long lowerBoundMS, long upperBoundMS)
         {
             if (!initiallyStarted)
                 return;
@@ -109,7 +109,7 @@ namespace KinectDummy
             pauseStreamingRequested = false;
         }
 
-        public void setTimelinePosition(long currentMS)
+        internal void setTimelinePosition(long currentMS)
         {
             if (!initiallyStarted)
                 return;
@@ -149,18 +149,18 @@ namespace KinectDummy
                 concurrentReadingQueue.TryDequeue(out dummy);
             }
         }
-        
-        public long getLowerBoundMilliseconds()
+
+        internal long getLowerBoundMilliseconds()
         {
             return transformBytesToMilliseconds(lowerBoundByteOffset);
         }
 
-        public long getUpperBoundMilliseconds()
+        internal long getUpperBoundMilliseconds()
         {
             return transformBytesToMilliseconds(upperBoundByteOffset);
         }
 
-        public long getCurrentFrameMilliseconds()
+        internal long getCurrentFrameMilliseconds()
         {
             if (currentFrame != null)
                 return transformBytesToMilliseconds(currentFrame.Item1);
@@ -184,7 +184,7 @@ namespace KinectDummy
             //}
         }
 
-        public void changeFPS(int fps)
+        internal void changeFPS(int fps)
         {
             int interval = (int)Math.Round(1000d / fps);
                                     
@@ -229,7 +229,7 @@ namespace KinectDummy
             }
         }
 
-        public void startStreaming(int fps)
+        internal void startStreaming(int fps)
         {
             if (savedStreamFileSet)
             {
@@ -241,27 +241,27 @@ namespace KinectDummy
             }
         }
 
-        public void pauseStreamingByGUI()
+        internal void pauseStreamingByGUI()
         {
             detachEventsFromTimers();
             pauseStreamingRequested = true;
             currentlyDequeing = false;
         }
 
-        public void startStreamingSolelyLiveFrames(int fps)
+        internal void startStreamingSolelyLiveFrames(int fps)
         {
             changeFPS(fps);
             frameArrivedTimer.Elapsed += kickFrameArrivedEvent;
             frameArrivedTimer.Start();
         }
 
-        public void pauseStreamingSolelyLiveFrames()
+        internal void pauseStreamingSolelyLiveFrames()
         {
             frameArrivedTimer.Elapsed -= kickFrameArrivedEvent;
             frameArrivedTimer.Stop();
         }
 
-        public void setSavedStreamFilePath(String savedStreamFilePath)
+        internal void setSavedStreamFilePath(String savedStreamFilePath)
         {
             if (initiallyStarted)
             {
@@ -291,7 +291,7 @@ namespace KinectDummy
             return this;
         }
 
-        public void dequeueFrame(object sender, EventArgs e)
+        internal void dequeueFrame(object sender, EventArgs e)
         {
             if (!pauseStreamingRequested)
             {
@@ -321,11 +321,11 @@ namespace KinectDummy
 
         private int counter = 0;
         private bool streamLiveFrames = false;
-        DepthFrame liveDepthFrame;
-        ushort[] realFrameDataAsArray = new ushort[new FrameDescription().Height* new FrameDescription().Width];
-        bool newRealFrame = false;
+        private DepthFrame liveDepthFrame;
+        private ushort[] realFrameDataAsArray = new ushort[new FrameDescription().Height* new FrameDescription().Width];
+        private bool newRealFrame = false;
 
-        public void kickFrameArrivedEvent(object sender, EventArgs e)
+        internal void kickFrameArrivedEvent(object sender, EventArgs e)
         {
             if (sensorOpened && FrameArrived != null)
             {
@@ -358,7 +358,7 @@ namespace KinectDummy
             //Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (streamed)");
         }
 
-        private void realFrameArrived(object sender, Microsoft.Kinect.DepthFrameArrivedEventArgs e)
+        internal void realFrameArrived(object sender, Microsoft.Kinect.DepthFrameArrivedEventArgs e)
         {
             if (streamLiveFrames)
             {
@@ -376,23 +376,7 @@ namespace KinectDummy
                 }
             }
         }
-
-        private void EndAsyncEvent(IAsyncResult iar)
-        {
-            var ar = (System.Runtime.Remoting.Messaging.AsyncResult)iar;
-            var invokedMethod = (EventHandler)ar.AsyncDelegate;
-
-            try
-            {
-                invokedMethod.EndInvoke(iar);
-            }
-            catch
-            {
-                // Handle any exceptions that were thrown by the invoked method
-                //Console.WriteLine("An event listener went kaboom!");
-            }
-        }
-
+        
         public DepthFrame AcquireLatestFrame()
         {
             if (streamLiveFrames)
@@ -401,7 +385,7 @@ namespace KinectDummy
                 return currentDepthFrame;
         }
 
-        public void startFillingQueueFromFile()
+        internal void startFillingQueueFromFile()
         {
             if (initiallyStarted)
             {
@@ -469,7 +453,7 @@ namespace KinectDummy
             }
         }
 
-        public void changeFreezeMarker()
+        internal void changeFreezeMarker()
         {
             freezeCurrentFrame = !freezeCurrentFrame;
         }
@@ -489,13 +473,13 @@ namespace KinectDummy
         {
             return frameBytes / (recentylReadFrameData.Length * 2);
         }
-        
-        public long getFileSizeInMS()
+
+        internal long getFileSizeInMS()
         {
             return transformBytesToMilliseconds(fileSizeInBytes);
         }
 
-        public void toggleStreamLiveFrames()
+        internal void toggleStreamLiveFrames()
         {
             streamLiveFrames = !streamLiveFrames;
 

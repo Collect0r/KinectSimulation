@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace CaptureKinectStream
 {
-    public class CapturingController
+    internal class CapturingController
     {
         private static Stopwatch sw;
         
@@ -23,11 +23,11 @@ namespace CaptureKinectStream
         private bool firstFrame = true;
         private int secondsToCapture;
 
-        public CapturingController()
+        internal CapturingController()
         {
         }
 
-        public void startCapturing(String filePath, int secondsToCapture = 0)
+        internal void startCapturing(String filePath, int secondsToCapture = 0)
         {
             this.secondsToCapture = secondsToCapture;
 
@@ -43,7 +43,7 @@ namespace CaptureKinectStream
             currentlyCapturing = true;
         }
 
-        public void stopCapturing()
+        internal void stopCapturing()
         {
             sw.Stop();
             sw.Reset();
@@ -79,7 +79,7 @@ namespace CaptureKinectStream
                     }
                     else
                     {
-                        Console.WriteLine("nope");
+                        //Console.WriteLine("nope");
                     }
                 }
             }
@@ -87,7 +87,7 @@ namespace CaptureKinectStream
 
         private bool currentlyCapturing = false;
 
-        public void recordThisFrame(DepthFrame currentFrame)
+        internal void recordThisFrame(DepthFrame currentFrame)
         {
             if (currentlyCapturing)
             {
@@ -111,7 +111,7 @@ namespace CaptureKinectStream
             }
         }
 
-        public void recordThisFrame(KinectDummy.DepthFrame currentFrame)
+        internal void recordThisFrame(KinectDummy.DepthFrame currentFrame)
         {
             if (currentlyCapturing)
             {

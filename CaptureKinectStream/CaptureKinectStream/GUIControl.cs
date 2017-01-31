@@ -9,13 +9,13 @@ using System.Windows.Forms;
 
 namespace CaptureKinectStream
 {
-    public static class GUIControl
+    internal static class GUIControl
     {
         private static CapturingController captureController = null;
 
         private static CaptureControlGUI gui;
 
-        public static void startGUIParallel()
+        internal static void startGUIParallel()
         {
             if (captureController != null)
                 throw new InvalidOperationException("GUI already started!");
@@ -32,18 +32,18 @@ namespace CaptureKinectStream
             Application.Run(gui);
         }
 
-        public static CaptureControlGUI getGUI()
+        internal static CaptureControlGUI getGUI()
         {
             return gui;
         }
 
-        public static void recordThisFrame(DepthFrame currentFrame)
+        internal static void recordThisFrame(DepthFrame currentFrame)
         {
             if (captureController != null)
                 captureController.recordThisFrame(currentFrame);
         }
 
-        public static void recordThisFrame(KinectDummy.DepthFrame currentFrame)
+        internal static void recordThisFrame(KinectDummy.DepthFrame currentFrame)
         {
             if (captureController != null)
                 captureController.recordThisFrame(currentFrame);

@@ -12,7 +12,7 @@ namespace KinectDummy
     /// <summary>
     /// A timer based on the multimedia timer API with 1ms precision.
     /// </summary>
-    public class AccurateTimer : IDisposable
+    internal class AccurateTimer : IDisposable
     {
         private bool disposed = false;
         private int interval, resolution;
@@ -21,7 +21,7 @@ namespace KinectDummy
         // Hold the timer callback to prevent garbage collection.
         private readonly MultimediaTimerCallback Callback;
 
-        public AccurateTimer()
+        internal AccurateTimer()
         {
             Callback = new MultimediaTimerCallback(TimerCallbackMethod);
             Resolution = 1;
@@ -33,7 +33,7 @@ namespace KinectDummy
             Dispose(false);
         }
 
-        public int Interval
+        internal int Interval
         {
             get
             {
@@ -53,7 +53,7 @@ namespace KinectDummy
         }
 
         // Note minimum resolution is 0, meaning highest possible resolution.
-        public int Resolution
+        internal int Resolution
         {
             get
             {
@@ -70,12 +70,12 @@ namespace KinectDummy
             }
         }
 
-        public bool IsRunning
+        internal bool IsRunning
         {
             get { return timerId != 0; }
         }
 
-        public void Start()
+        internal void Start()
         {
             CheckDisposed();
 
@@ -93,7 +93,7 @@ namespace KinectDummy
             }
         }
 
-        public void Stop()
+        internal void Stop()
         {
             CheckDisposed();
 
@@ -109,7 +109,7 @@ namespace KinectDummy
             timerId = 0;
         }
 
-        public event EventHandler Elapsed;
+        internal event EventHandler Elapsed;
 
         public void Dispose()
         {

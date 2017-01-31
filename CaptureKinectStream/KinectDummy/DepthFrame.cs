@@ -8,7 +8,7 @@ namespace KinectDummy
 {
     public class DepthFrame : IDisposable
     {
-        ushort[] fakeFrameDataAsArray;
+        private ushort[] fakeFrameDataAsArray;
 
         public ushort DepthMinReliableDistance = 500;
         public ushort DepthMaxReliableDistance = ushort.MaxValue;

@@ -13,29 +13,28 @@ using Microsoft.Kinect;
 
 namespace CaptureKinectStream
 {
-    // TODO: non public
-    public static class DataStreamHandler
+    internal static class DataStreamHandler
     {
-        static int counter = 0;
-        static int counter2 = 0;
+        //static int counter = 0;
+        //static int counter2 = 0;
         private static ConcurrentQueue<ushort[]> concurrentWritingQueue = new ConcurrentQueue<ushort[]>();
         private static String filePath;
         private static bool writeStopRequested = true;
-        private static int unsuccessfulTries = 0; 
+        private static int unsuccessfulTries = 0;
 
-        public static void requestWriteStop()
+        internal static void requestWriteStop()
         {
             writeStopRequested = true;
         }
 
-        public static void addFrameToQueue(ushort[] frame)
+        internal static void addFrameToQueue(ushort[] frame)
         {
             concurrentWritingQueue.Enqueue(frame);
             
-            Console.WriteLine(counter2++ + " enqueued");
+            //Console.WriteLine(counter2++ + " enqueued");
         }
 
-        public static void startWritingQueueToFile(String filePathNew)
+        internal static void startWritingQueueToFile(String filePathNew)
         {
             writeStopRequested = false;
             filePath = filePathNew;
@@ -66,7 +65,7 @@ namespace CaptureKinectStream
                             binaryWriter.Write(currentFrameDepthData[i]);
                         }
 
-                        Console.WriteLine(counter++ + " written");
+                        //Console.WriteLine(counter++ + " written");
                         unsuccessfulTries = 0;
                         //byte[] compressedData = getCompressedData(currentFrameDepthData);
                         //binaryWriter.Write(compressedData);
