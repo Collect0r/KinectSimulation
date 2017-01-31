@@ -10,8 +10,10 @@ namespace KinectDummy
     {
         private ushort[] fakeFrameDataAsArray;
 
-        public ushort DepthMinReliableDistance = 500;
-        public ushort DepthMaxReliableDistance = ushort.MaxValue;
+        public ushort DepthMinReliableDistance { get; } = 500;
+        public ushort DepthMaxReliableDistance { get; } = ushort.MaxValue;
+        public FrameDescription FrameDescription { get; } = new FrameDescription();
+        public DepthFrameSource DepthFrameSource { get; } = KinectSensor.currentKinectSensorForInternalPurposes.DepthFrameSource;
 
         internal DepthFrame(ushort[] fakeFrameDataAsArray)
         {

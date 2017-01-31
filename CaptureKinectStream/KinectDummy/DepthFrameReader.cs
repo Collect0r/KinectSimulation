@@ -20,6 +20,7 @@ namespace KinectDummy
         private ushort[] recentylReadFrameData = new ushort[new FrameDescription().Height * new FrameDescription().Width];
         private long recentlyReadFrameByteOffset = 0;
 
+        public bool IsPaused { get; private set; } = true;
 
         public event EventHandler<DepthFrameArrivedEventArgs> FrameArrived;
         internal BinaryReader streamReader;
@@ -238,6 +239,7 @@ namespace KinectDummy
                 attachEventsToTimers();
                 pauseStreamingRequested = false;
                 initiallyStarted = true;
+                IsPaused = false;
             }
         }
 
@@ -246,6 +248,7 @@ namespace KinectDummy
             detachEventsFromTimers();
             pauseStreamingRequested = true;
             currentlyDequeing = false;
+            IsPaused = true;
         }
 
         internal void startStreamingSolelyLiveFrames(int fps)
@@ -253,12 +256,14 @@ namespace KinectDummy
             changeFPS(fps);
             frameArrivedTimer.Elapsed += kickFrameArrivedEvent;
             frameArrivedTimer.Start();
+            IsPaused = false;
         }
 
         internal void pauseStreamingSolelyLiveFrames()
         {
             frameArrivedTimer.Elapsed -= kickFrameArrivedEvent;
             frameArrivedTimer.Stop();
+            IsPaused = true;
         }
 
         internal void setSavedStreamFilePath(String savedStreamFilePath)
@@ -340,12 +345,12 @@ namespace KinectDummy
                     {
                         depthEvent = new DepthFrameArrivedEventArgs(liveDepthFrame);
                         newRealFrame = false;
-                        Console.WriteLine("live"/*counter++ + " kicked"*/);
+                        //Console.WriteLine("live"/*counter++ + " kicked"*/);
                     }
                     else if (!streamLiveFrames && currentDepthFrame != null)
                     {
                         depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame);
-                        Console.WriteLine("recorded"/*counter++ + " kicked"*/);
+                        //Console.WriteLine("recorded"/*counter++ + " kicked"*/);
                     }
 
                     if (depthEvent != null)

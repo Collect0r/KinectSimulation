@@ -18,17 +18,19 @@ namespace KinectDummy
 
         private Microsoft.Kinect.KinectSensor realKinectSensor;
 
+        internal static KinectSensor currentKinectSensorForInternalPurposes;
+
         internal KinectSensor()
         {
             try
             {
                 realKinectSensor = Microsoft.Kinect.KinectSensor.GetDefault();
-                DepthFrameSource = new DepthFrameSource(realKinectSensor);
+                DepthFrameSource = new DepthFrameSource(this, realKinectSensor);
             }
             catch (Exception e)
             {
                 Console.WriteLine("No real Kinect found. Initializing Player without Kinect.");
-                DepthFrameSource = new DepthFrameSource();
+                DepthFrameSource = new DepthFrameSource(this);
             }
         }
 
@@ -46,7 +48,8 @@ namespace KinectDummy
 
         public static KinectSensor GetDefault()
         {
-            return new KinectSensor();
+            currentKinectSensorForInternalPurposes = new KinectSensor();
+            return currentKinectSensorForInternalPurposes;
         }
     }
 }
