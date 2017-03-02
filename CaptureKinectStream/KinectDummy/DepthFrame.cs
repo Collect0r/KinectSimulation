@@ -34,5 +34,10 @@ namespace KinectDummy
         {
             // ?? maybe dispose kinectbuffer
         }
+
+        internal DepthFrame getDeepCopy()
+        {
+            return new DepthFrame((ushort[])fakeFrameDataAsArray.Clone()); // is a deep copy because ushort is primitive
+        }
     }
 }

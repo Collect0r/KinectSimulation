@@ -12,7 +12,7 @@ namespace KinectDummy
 
         internal DepthFrameReference(DepthFrame depthFrame)
         {
-            this.depthFrame = depthFrame;
+            this.depthFrame = depthFrame.getDeepCopy();
         }
         
         public DepthFrame AcquireFrame()

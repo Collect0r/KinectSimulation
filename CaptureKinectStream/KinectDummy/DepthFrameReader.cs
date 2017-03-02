@@ -338,23 +338,36 @@ namespace KinectDummy
                 var eventListeners = FrameArrived.GetInvocationList();
                 for (int i = 0; i < eventListeners.Count(); i++)
                 {
-                    var methodToInvoke = (EventHandler<DepthFrameArrivedEventArgs>)eventListeners[i];
-
                     DepthFrameArrivedEventArgs depthEvent = null;
-                    if ((streamLiveFrames && newRealFrame))
+                    if (streamLiveFrames && newRealFrame)
                     {
                         depthEvent = new DepthFrameArrivedEventArgs(liveDepthFrame);
                         newRealFrame = false;
-                        //Console.WriteLine("live"/*counter++ + " kicked"*/);
                     }
-                    else if (!streamLiveFrames && currentDepthFrame != null)
+                    else if (!streamLiveFrames && currentDepthFrame != null) 
                     {
                         depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame);
-                        //Console.WriteLine("recorded"/*counter++ + " kicked"*/);
                     }
 
                     if (depthEvent != null)
-                        methodToInvoke.BeginInvoke(this, depthEvent, null, null);
+                        FrameArrived(this, depthEvent);
+
+                    //var methodToInvoke = (EventHandler<DepthFrameArrivedEventArgs>)eventListeners[i];
+
+                    //DepthFrameArrivedEventArgs depthEvent = null;
+                    //if ((streamLiveFrames && newRealFrame))
+                    //{
+                    //    depthEvent = new DepthFrameArrivedEventArgs(liveDepthFrame);
+                    //    newRealFrame = false;
+                    //    Console.WriteLine("live"/*counter++ + " kicked"*/);
+                    //}
+                    //else if (!streamLiveFrames && currentDepthFrame != null)
+                    //{
+                    //    depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame);
+                    //    Console.WriteLine("recorded"/*counter++ + " kicked"*/);
+                    //}
+
+                    //if (depthEvent != null)
                 }
 
             }
@@ -440,6 +453,11 @@ namespace KinectDummy
                         catch (ObjectDisposedException ex)
                         {
                             //Console.WriteLine("Stream already closed (Exception).");
+                        }
+                        catch (Exception e)
+                        {
+                            streamReader.BaseStream.Position = lowerBoundByteOffset;
+                            streamReader.BaseStream.Flush();
                         }
 
                         //int testMS = (int)DepthFrameReader.sw.ElapsedMilliseconds;
