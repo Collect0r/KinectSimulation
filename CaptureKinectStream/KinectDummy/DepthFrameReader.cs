@@ -329,10 +329,11 @@ namespace KinectDummy
         private DepthFrame liveDepthFrame;
         private ushort[] realFrameDataAsArray = new ushort[new FrameDescription().Height* new FrameDescription().Width];
         private bool newRealFrame = false;
+        private bool currentlyProcessingFrameDataExternal = false;
 
         internal void kickFrameArrivedEvent(object sender, EventArgs e)
         {
-            if (sensorOpened && FrameArrived != null)
+            if (sensorOpened && FrameArrived != null && !currentlyProcessingFrameDataExternal)
             {
                 //async call of every listener
                 var eventListeners = FrameArrived.GetInvocationList();
@@ -349,8 +350,12 @@ namespace KinectDummy
                         depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame);
                     }
 
+                    currentlyProcessingFrameDataExternal = true;
+
                     if (depthEvent != null)
                         FrameArrived(this, depthEvent);
+
+                    currentlyProcessingFrameDataExternal = false;
 
                     //var methodToInvoke = (EventHandler<DepthFrameArrivedEventArgs>)eventListeners[i];
 
