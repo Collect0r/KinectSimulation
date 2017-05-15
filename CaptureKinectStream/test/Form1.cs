@@ -42,8 +42,6 @@ namespace test
         private void button2_Click(object sender, EventArgs e)
         {
             KinectSensor kinect = KinectSensor.GetDefault();
-
-            //KinectDepthStreamRecorder.startController(kinect);
         }
         
     }

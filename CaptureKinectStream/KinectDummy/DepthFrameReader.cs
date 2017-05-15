@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KinectDummy.InputSources;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,9 @@ using System.Windows.Forms;
 namespace KinectDummy
 {
     public delegate void EventHandler<DepthFrameArrivedEventArgs>(object sender, DepthFrameArrivedEventArgs e);
+
+
+    public enum FrameSource { KINECT, RECORDED, ASTRA_PRO }
 
     public class DepthFrameReader
     {
@@ -63,6 +67,9 @@ namespace KinectDummy
         private Microsoft.Kinect.KinectSensor realKinectSensor { get; } = null;
         private Microsoft.Kinect.DepthFrameReader realDepthFrameReader { get; } = null;
 
+        private Thread astraAdapterThread;
+        private AstraProAdapter astraAdapter = new AstraProAdapter();
+
         internal bool realKinectSet { get; } = false;
 
         internal DepthFrameReader(Microsoft.Kinect.KinectSensor realKinectSensor) : this()
@@ -87,6 +94,10 @@ namespace KinectDummy
             dequeueFrameTimer = new AccurateTimer() { Interval = 33 };
 
             GUIControl.startGUIParallel(this);
+
+            // starting the astra pro server socket. will wait for connections. TODO: start astra pro sender as process
+            astraAdapterThread = new Thread(astraAdapter.run);
+            astraAdapterThread.Start();
         }
 
         internal void setRepeatingInterval(long lowerBoundMS, long upperBoundMS)
@@ -175,14 +186,6 @@ namespace KinectDummy
             detachEventsFromTimers();
             
             streamReader.Dispose();
-
-            //using (StreamWriter fs = new StreamWriter(@"C:\\Users\\Joachim\\Desktop\\IFL\\performanceTest.txt"))
-            //{
-            //    foreach (int val in performanceTestList)
-            //    {
-            //        fs.WriteLine(val);
-            //    }
-            //}
         }
 
         internal void changeFPS(int fps)
@@ -324,8 +327,8 @@ namespace KinectDummy
             }
         }
 
-        private int counter = 0;
-        private bool streamLiveFrames = false;
+
+        private FrameSource inputSource = FrameSource.KINECT;
         private DepthFrame liveDepthFrame;
         private ushort[] realFrameDataAsArray = new ushort[new FrameDescription().Height* new FrameDescription().Width];
         private bool newRealFrame = false;
@@ -335,46 +338,28 @@ namespace KinectDummy
         {
             if (sensorOpened && FrameArrived != null && !currentlyProcessingFrameDataExternal)
             {
-                //async call of every listener
-                var eventListeners = FrameArrived.GetInvocationList();
-                for (int i = 0; i < eventListeners.Count(); i++)
+
+                DepthFrameArrivedEventArgs depthEvent = null;
+                if (inputSource == FrameSource.KINECT && newRealFrame)
                 {
-                    DepthFrameArrivedEventArgs depthEvent = null;
-                    if (streamLiveFrames && newRealFrame)
-                    {
-                        depthEvent = new DepthFrameArrivedEventArgs(liveDepthFrame);
-                        newRealFrame = false;
-                    }
-                    else if (!streamLiveFrames && currentDepthFrame != null) 
-                    {
-                        depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame);
-                    }
-
-                    currentlyProcessingFrameDataExternal = true;
-
-                    if (depthEvent != null)
-                        FrameArrived(this, depthEvent);
-
-                    currentlyProcessingFrameDataExternal = false;
-
-                    //var methodToInvoke = (EventHandler<DepthFrameArrivedEventArgs>)eventListeners[i];
-
-                    //DepthFrameArrivedEventArgs depthEvent = null;
-                    //if ((streamLiveFrames && newRealFrame))
-                    //{
-                    //    depthEvent = new DepthFrameArrivedEventArgs(liveDepthFrame);
-                    //    newRealFrame = false;
-                    //    Console.WriteLine("live"/*counter++ + " kicked"*/);
-                    //}
-                    //else if (!streamLiveFrames && currentDepthFrame != null)
-                    //{
-                    //    depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame);
-                    //    Console.WriteLine("recorded"/*counter++ + " kicked"*/);
-                    //}
-
-                    //if (depthEvent != null)
+                    depthEvent = new DepthFrameArrivedEventArgs(liveDepthFrame);
+                    newRealFrame = false;
+                }
+                else if (inputSource == FrameSource.RECORDED && currentDepthFrame != null) 
+                {
+                    depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame);
+                }
+                else if (inputSource == FrameSource.ASTRA_PRO)
+                {
+                    depthEvent = new DepthFrameArrivedEventArgs(astraAdapter.LastFrame);
                 }
 
+                currentlyProcessingFrameDataExternal = true;
+
+                if (depthEvent != null)
+                    FrameArrived(this, depthEvent);
+
+                currentlyProcessingFrameDataExternal = false;
             }
 
             // if (currentFrame != null)
@@ -383,7 +368,7 @@ namespace KinectDummy
 
         internal void realFrameArrived(object sender, Microsoft.Kinect.DepthFrameArrivedEventArgs e)
         {
-            if (streamLiveFrames)
+            if (inputSource == FrameSource.KINECT)
             {
                 using (Microsoft.Kinect.DepthFrame tempRealDepthFrame = realDepthFrameReader.AcquireLatestFrame())
                 {
@@ -402,7 +387,7 @@ namespace KinectDummy
         
         public DepthFrame AcquireLatestFrame()
         {
-            if (streamLiveFrames)
+            if (inputSource == FrameSource.KINECT)
                 return liveDepthFrame;
             else
                 return currentDepthFrame;
@@ -507,11 +492,11 @@ namespace KinectDummy
             return transformBytesToMilliseconds(fileSizeInBytes);
         }
 
-        internal void toggleStreamLiveFrames()
-        {
-            streamLiveFrames = !streamLiveFrames;
 
-            if (streamLiveFrames)
+        internal void setFrameSource(FrameSource src)
+        {
+            this.inputSource = src;
+            if (inputSource == FrameSource.RECORDED)
                 pauseStreamingRequested = true;
             else
                 pauseStreamingRequested = false;

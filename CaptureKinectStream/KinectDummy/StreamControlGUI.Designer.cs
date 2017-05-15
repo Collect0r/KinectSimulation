@@ -42,12 +42,13 @@
             this.unitLabelTwo = new System.Windows.Forms.Label();
             this.unitLabelOne = new System.Windows.Forms.Label();
             this.unitLabelThree = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
+            this.BtnToggleMode = new System.Windows.Forms.Button();
             this.currentModeLabel = new System.Windows.Forms.Label();
-            this.onlyRealKinectButton = new System.Windows.Forms.Button();
-            this.bothDataSourcesButton = new System.Windows.Forms.Button();
-            this.onlyRecordedDataButton = new System.Windows.Forms.Button();
+            this.BtnKinect = new System.Windows.Forms.Button();
+            this.BtnDataSources = new System.Windows.Forms.Button();
+            this.BtnOnlyRecordedData = new System.Windows.Forms.Button();
             this.selectionRangeSlider1 = new KinectDummy.SelectionRangeSlider();
+            this.BtnAstraPro = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.fpsSetter)).BeginInit();
             this.SuspendLayout();
             // 
@@ -215,15 +216,15 @@
             // 
             // button1
             // 
-            this.button1.Enabled = false;
-            this.button1.Location = new System.Drawing.Point(155, 201);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(102, 23);
-            this.button1.TabIndex = 25;
-            this.button1.Text = "Toggle Mode";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Visible = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.BtnToggleMode.Enabled = false;
+            this.BtnToggleMode.Location = new System.Drawing.Point(155, 201);
+            this.BtnToggleMode.Name = "button1";
+            this.BtnToggleMode.Size = new System.Drawing.Size(102, 23);
+            this.BtnToggleMode.TabIndex = 25;
+            this.BtnToggleMode.Text = "Toggle Mode";
+            this.BtnToggleMode.UseVisualStyleBackColor = true;
+            this.BtnToggleMode.Visible = false;
+            this.BtnToggleMode.Click += new System.EventHandler(this.BtnToggleMode_Click);
             // 
             // currentModeLabel
             // 
@@ -239,35 +240,35 @@
             // 
             // onlyRealKinectButton
             // 
-            this.onlyRealKinectButton.Enabled = false;
-            this.onlyRealKinectButton.Location = new System.Drawing.Point(14, 75);
-            this.onlyRealKinectButton.Name = "onlyRealKinectButton";
-            this.onlyRealKinectButton.Size = new System.Drawing.Size(121, 101);
-            this.onlyRealKinectButton.TabIndex = 29;
-            this.onlyRealKinectButton.Text = "ONLY\r\nreal kinect";
-            this.onlyRealKinectButton.UseVisualStyleBackColor = true;
-            this.onlyRealKinectButton.Click += new System.EventHandler(this.onlyRealKinectButton_Click);
+            this.BtnKinect.Enabled = false;
+            this.BtnKinect.Location = new System.Drawing.Point(14, 75);
+            this.BtnKinect.Name = "onlyRealKinectButton";
+            this.BtnKinect.Size = new System.Drawing.Size(121, 101);
+            this.BtnKinect.TabIndex = 29;
+            this.BtnKinect.Text = "ONLY\r\nreal kinect";
+            this.BtnKinect.UseVisualStyleBackColor = true;
+            this.BtnKinect.Click += new System.EventHandler(this.BtnKinect_Click);
             // 
             // bothDataSourcesButton
             // 
-            this.bothDataSourcesButton.Enabled = false;
-            this.bothDataSourcesButton.Location = new System.Drawing.Point(145, 75);
-            this.bothDataSourcesButton.Name = "bothDataSourcesButton";
-            this.bothDataSourcesButton.Size = new System.Drawing.Size(121, 101);
-            this.bothDataSourcesButton.TabIndex = 30;
-            this.bothDataSourcesButton.Text = "BOTH\r\nreal kinect + recorded";
-            this.bothDataSourcesButton.UseVisualStyleBackColor = true;
-            this.bothDataSourcesButton.Click += new System.EventHandler(this.bothDataSourcesButton_Click);
+            this.BtnDataSources.Enabled = false;
+            this.BtnDataSources.Location = new System.Drawing.Point(145, 75);
+            this.BtnDataSources.Name = "bothDataSourcesButton";
+            this.BtnDataSources.Size = new System.Drawing.Size(121, 101);
+            this.BtnDataSources.TabIndex = 30;
+            this.BtnDataSources.Text = "BOTH\r\nreal kinect + recorded";
+            this.BtnDataSources.UseVisualStyleBackColor = true;
+            this.BtnDataSources.Click += new System.EventHandler(this.BtnDataSources_Click);
             // 
             // onlyRecordedDataButton
             // 
-            this.onlyRecordedDataButton.Location = new System.Drawing.Point(276, 75);
-            this.onlyRecordedDataButton.Name = "onlyRecordedDataButton";
-            this.onlyRecordedDataButton.Size = new System.Drawing.Size(121, 101);
-            this.onlyRecordedDataButton.TabIndex = 31;
-            this.onlyRecordedDataButton.Text = "ONLY\r\nrecorded data";
-            this.onlyRecordedDataButton.UseVisualStyleBackColor = true;
-            this.onlyRecordedDataButton.Click += new System.EventHandler(this.onlyRecordedDataButton_Click);
+            this.BtnOnlyRecordedData.Location = new System.Drawing.Point(276, 75);
+            this.BtnOnlyRecordedData.Name = "onlyRecordedDataButton";
+            this.BtnOnlyRecordedData.Size = new System.Drawing.Size(121, 101);
+            this.BtnOnlyRecordedData.TabIndex = 31;
+            this.BtnOnlyRecordedData.Text = "ONLY\r\nrecorded data";
+            this.BtnOnlyRecordedData.UseVisualStyleBackColor = true;
+            this.BtnOnlyRecordedData.Click += new System.EventHandler(this.BtnOnlyRecordedData_Click);
             // 
             // selectionRangeSlider1
             // 
@@ -287,16 +288,27 @@
             this.selectionRangeSlider1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.selectionRangeSlider1_MouseDown);
             this.selectionRangeSlider1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.selectionRangeSlider1_MouseUp);
             // 
+            // BtnAstraPro
+            // 
+            this.BtnAstraPro.Location = new System.Drawing.Point(13, 195);
+            this.BtnAstraPro.Name = "BtnAstraPro";
+            this.BtnAstraPro.Size = new System.Drawing.Size(108, 92);
+            this.BtnAstraPro.TabIndex = 32;
+            this.BtnAstraPro.Text = "ONLY\r\nAstra Pro";
+            this.BtnAstraPro.UseVisualStyleBackColor = true;
+            this.BtnAstraPro.Click += new System.EventHandler(this.BtnAstraPro_Click);
+            // 
             // StreamControlGUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(410, 434);
-            this.Controls.Add(this.onlyRecordedDataButton);
-            this.Controls.Add(this.bothDataSourcesButton);
-            this.Controls.Add(this.onlyRealKinectButton);
+            this.Controls.Add(this.BtnAstraPro);
+            this.Controls.Add(this.BtnOnlyRecordedData);
+            this.Controls.Add(this.BtnDataSources);
+            this.Controls.Add(this.BtnKinect);
             this.Controls.Add(this.currentModeLabel);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.BtnToggleMode);
             this.Controls.Add(this.unitLabelThree);
             this.Controls.Add(this.unitLabelOne);
             this.Controls.Add(this.unitLabelTwo);
@@ -338,10 +350,11 @@
         private System.Windows.Forms.Label unitLabelTwo;
         private System.Windows.Forms.Label unitLabelOne;
         private System.Windows.Forms.Label unitLabelThree;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button BtnToggleMode;
         private System.Windows.Forms.Label currentModeLabel;
-        private System.Windows.Forms.Button onlyRealKinectButton;
-        private System.Windows.Forms.Button bothDataSourcesButton;
-        private System.Windows.Forms.Button onlyRecordedDataButton;
+        private System.Windows.Forms.Button BtnKinect;
+        private System.Windows.Forms.Button BtnDataSources;
+        private System.Windows.Forms.Button BtnOnlyRecordedData;
+        private System.Windows.Forms.Button BtnAstraPro;
     }
 }

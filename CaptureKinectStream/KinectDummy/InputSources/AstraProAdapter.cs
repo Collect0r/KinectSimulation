@@ -24,12 +24,15 @@ namespace KinectDummy.InputSources
         private int fragmentId = 0;
 
         private ushort[] curImageData = new ushort[WIDTH * HEIGHT];
+        private ushort[] curCroppedImageData = new ushort[512 * 424];
+
         private long frameIndex = 0;
 
         public DepthFrame LastFrame {
             get
             {
-                return new DepthFrame(curImageData);
+                crop(curImageData, curCroppedImageData);
+                return new DepthFrame(curCroppedImageData);
             }
             private set { }
         }
@@ -44,7 +47,7 @@ namespace KinectDummy.InputSources
         /// <summary>
         /// Starts server and begins listening. Caution: should not be called from main thread! Will block otherwise.
         /// </summary>
-        public void start()
+        public void run()
         {
             shouldStop = false;
 
@@ -106,6 +109,13 @@ namespace KinectDummy.InputSources
         {
             for (int i = 0, j = fragmentId * WIDTH * LINES_PER_FRAGMENT; i < WIDTH * LINES_PER_FRAGMENT; i++, j++)
                 destImage[j] = (ushort)BitConverter.ToInt16(fragment, i * 2);   // i * 2 because two bytes per short
+        }
+
+        private void crop(ushort[] input, ushort[] output)
+        {
+            for (int i = 0; i < 424; i++)
+                for (int j = 0; j < 512; j++)
+                    output[i * 512 + j] = input[i * 640 + j];
         }
 
     }

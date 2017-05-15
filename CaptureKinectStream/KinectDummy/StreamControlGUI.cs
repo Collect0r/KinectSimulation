@@ -13,7 +13,7 @@ namespace KinectDummy
     internal partial class StreamControlGUI : Form
     {
         enum SliderValueChangeType { SelectedBound, SelectedValue }
-        enum DataSourceMode { realKinect, recordedData, both }
+        enum DataSourceMode { REAL_KINECT, RECORDED_DATA, REAL_KINECT_AND_RECORDED_DATA, ASTRA_PRO }
 
         private String savedKinectStreamFilePath;
         private String savedKinectStreamFolderPath;
@@ -49,8 +49,8 @@ namespace KinectDummy
 
             if (depthFrameReader.realKinectSet)
             {
-                onlyRealKinectButton.Enabled = true;
-                bothDataSourcesButton.Enabled = true;
+                BtnKinect.Enabled = true;
+                BtnDataSources.Enabled = true;
             }
         }
 
@@ -107,11 +107,11 @@ namespace KinectDummy
                         unitLabelThree.Visible = true;
                         measureUnitButton.Enabled = true;
                         freezeButton.Enabled = true;
-                        button1.Enabled = true;
+                        BtnToggleMode.Enabled = true;
 
                         if (depthFrameReader.realKinectSet)
                         {
-                            button1.Enabled = true;
+                            BtnToggleMode.Enabled = true;
                             currentModeLabel.Visible = true;
                         }
 
@@ -353,72 +353,101 @@ namespace KinectDummy
                 return milliseconds;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void BtnToggleMode_Click(object sender, EventArgs e)
         {
-            if (dataSourceMode == DataSourceMode.realKinect)
-                changeDataSourceMode(DataSourceMode.recordedData);
+            if (dataSourceMode == DataSourceMode.REAL_KINECT)
+            {
+                changeDataSourceMode(DataSourceMode.RECORDED_DATA);
+                depthFrameReader.setFrameSource(FrameSource.RECORDED);
+            }
             else
-                changeDataSourceMode(DataSourceMode.realKinect);
-
-            depthFrameReader.toggleStreamLiveFrames();
+            {
+                changeDataSourceMode(DataSourceMode.REAL_KINECT);
+                depthFrameReader.setFrameSource(FrameSource.KINECT);
+            } 
         }
 
         private void changeDataSourceMode(DataSourceMode newDSM)
         {
             dataSourceMode = newDSM;
 
-            if (dataSourceMode == DataSourceMode.realKinect)
+            switch (dataSourceMode)
             {
-                currentModeLabel.Text = "Streaming Live Frames";
-            }
-            else
-            {
-                currentModeLabel.Text = "Streaming Recorded Frames";
+                case DataSourceMode.REAL_KINECT:
+                    currentModeLabel.Text = "Streaming Kinect Frames";
+                    break;
+                case DataSourceMode.REAL_KINECT_AND_RECORDED_DATA:
+                case DataSourceMode.RECORDED_DATA:
+                    currentModeLabel.Text = "Streaming Recorded Frames";
+                    break;
+                case DataSourceMode.ASTRA_PRO:
+                    currentModeLabel.Text = "Streaming AstraPro Frames";
+                    break;
             }
 
             currentModeLabel.Visible = true;
         }
 
-        private void onlyRealKinectButton_Click(object sender, EventArgs e)
+        private void BtnKinect_Click(object sender, EventArgs e)
         {
-            changeDataSourceMode(DataSourceMode.realKinect);
+            changeDataSourceMode(DataSourceMode.REAL_KINECT);
 
-            onlyRecordedDataButton.Visible = false;
-            bothDataSourcesButton.Visible = false;
-            onlyRealKinectButton.Enabled = false;
+            BtnOnlyRecordedData.Visible = false;
+            BtnDataSources.Visible = false;
+            BtnAstraPro.Visible = false;
+            BtnKinect.Enabled = false;
+            
 
             solelyStreamLiveFrames = true;
             toggleStreamButton.Enabled = true;
-            depthFrameReader.toggleStreamLiveFrames();
+            depthFrameReader.setFrameSource(FrameSource.KINECT);
         }
 
-        private void bothDataSourcesButton_Click(object sender, EventArgs e)
+        private void BtnDataSources_Click(object sender, EventArgs e)
         {
-            changeDataSourceMode(DataSourceMode.recordedData);
+            changeDataSourceMode(DataSourceMode.RECORDED_DATA);
 
             openFileDialog();
 
-            onlyRealKinectButton.Visible = false;
-            onlyRecordedDataButton.Visible = false;
-            bothDataSourcesButton.Enabled = false;
+            BtnKinect.Visible = false;
+            BtnOnlyRecordedData.Visible = false;
+            BtnAstraPro.Visible = false;
+            BtnDataSources.Enabled = false;
+            
 
-            button1.Visible = true;
-            button1.Enabled = false;
+            BtnToggleMode.Visible = true;
+            BtnToggleMode.Enabled = false;
 
             solelyStreamLiveFrames = false;
         }
 
-        private void onlyRecordedDataButton_Click(object sender, EventArgs e)
+        private void BtnOnlyRecordedData_Click(object sender, EventArgs e)
         {
-            changeDataSourceMode(DataSourceMode.recordedData);
+            changeDataSourceMode(DataSourceMode.RECORDED_DATA);
 
             openFileDialog();
 
-            onlyRealKinectButton.Visible = false;
-            bothDataSourcesButton.Visible = false;
-            onlyRecordedDataButton.Enabled = false;
+            BtnKinect.Visible = false;
+            BtnDataSources.Visible = false;
+            BtnAstraPro.Visible = false;
+            BtnOnlyRecordedData.Enabled = false;
+            
 
             solelyStreamLiveFrames = false;
+        }
+
+        private void BtnAstraPro_Click(object sender, EventArgs e)
+        {
+            changeDataSourceMode(DataSourceMode.ASTRA_PRO);
+
+            BtnOnlyRecordedData.Visible = false;
+            BtnDataSources.Visible = false;
+            BtnKinect.Visible = false;
+            BtnAstraPro.Enabled = false;
+
+            solelyStreamLiveFrames = true;
+            toggleStreamButton.Enabled = true;
+            depthFrameReader.setFrameSource(FrameSource.ASTRA_PRO);
         }
     }
 }
