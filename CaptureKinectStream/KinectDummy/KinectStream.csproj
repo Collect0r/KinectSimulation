@@ -54,6 +54,7 @@
     <Compile Include="DepthFrameSource.cs" />
     <Compile Include="FrameDescription.cs" />
     <Compile Include="GUIControl.cs" />
+    <Compile Include="InputSources\AstraProAdapter.cs" />
     <Compile Include="IsAvailableChangedEventArgs.cs" />
     <Compile Include="KinectBuffer.cs" />
     <Compile Include="KinectSensor.cs" />
