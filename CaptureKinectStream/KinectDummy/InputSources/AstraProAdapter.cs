@@ -76,12 +76,14 @@ namespace KinectDummy.InputSources
                     // Loop to receive all the data sent by the client.
                     while ((i = stream.Read(buf, 0, buf.Length)) != 0)
                     {
-                        // TODO check if always working
+                        short s = BitConverter.ToInt16(buf, 0);
+                        
+                        copy(buf, s < 12 ? s : 0, curImageData);
                         fragmentId = (fragmentId + 1) % 12;     // mod 12: each frame is split into 12 fragments.
-                        copy(buf, fragmentId, curImageData);
+
 
                         // increasing frame index when whole image was transmitted
-                        frameIndex = fragmentId == 0 ? frameIndex + 1 : frameIndex;
+                        frameIndex = s == 0 ? frameIndex + 1 : frameIndex;
                     }
                 }
 

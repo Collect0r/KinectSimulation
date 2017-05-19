@@ -42,7 +42,13 @@ namespace test
         private void button2_Click(object sender, EventArgs e)
         {
             KinectSensor kinect = KinectSensor.GetDefault();
+            DepthFrameReader reader = kinect.DepthFrameSource.OpenReader();
+            reader.FrameArrived += myDummyMethod;
         }
-        
+
+        private void myDummyMethod(object sender, DepthFrameArrivedEventArgs e)
+        {
+            // don't do anything
+        }
     }
 }

@@ -431,8 +431,8 @@ namespace KinectDummy
             BtnDataSources.Visible = false;
             BtnAstraPro.Visible = false;
             BtnOnlyRecordedData.Enabled = false;
-            
 
+            depthFrameReader.setFrameSource(FrameSource.RECORDED);
             solelyStreamLiveFrames = false;
         }
 

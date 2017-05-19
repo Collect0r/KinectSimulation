@@ -361,9 +361,6 @@ namespace KinectDummy
 
                 currentlyProcessingFrameDataExternal = false;
             }
-
-            // if (currentFrame != null)
-            //Console.WriteLine(calcFrameNumber(currentFrame.Item1) + " (streamed)");
         }
 
         internal void realFrameArrived(object sender, Microsoft.Kinect.DepthFrameArrivedEventArgs e)
