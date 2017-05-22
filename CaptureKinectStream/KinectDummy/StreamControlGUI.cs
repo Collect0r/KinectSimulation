@@ -82,76 +82,75 @@ namespace KinectDummy
 
         private void toggleStreamButton_Click(object sender, EventArgs e)
         {
+            if (currentlyStreaming)
+                pausStreaming();
+            else
+                startStreaming();   
+        }
+
+        private void startStreaming()
+        {
             if (!solelyStreamLiveFrames)
             {
-                if (currentlyStreaming)
+                toggleStreamButton.Text = "Pause Streaming";
+                depthFrameReader.setSavedStreamFilePath(savedKinectStreamFilePath);
+
+                selectionRangeSlider1.Visible = true;
+                lowerBoundBox.Visible = true;
+                currentPositionBox.Visible = true;
+                upperBoundBox.Visible = true;
+                unitLabelOne.Visible = true;
+                unitLabelTwo.Visible = true;
+                unitLabelThree.Visible = true;
+                measureUnitButton.Enabled = true;
+                freezeButton.Enabled = true;
+                BtnToggleMode.Enabled = true;
+
+                if (depthFrameReader.realKinectSet)
                 {
-                    toggleStreamButton.Text = "Start Streaming";
-                    depthFrameReader.pauseStreamingByGUI();
-                    updateGUItimer.Elapsed -= invokeUpdateTimeBar;
-                    updateGUItimer.Stop();
-                }
-                else
-                {
-                    toggleStreamButton.Text = "Pause Streaming";
-                    depthFrameReader.setSavedStreamFilePath(savedKinectStreamFilePath);
-
-                    if (firstStart)
-                    {
-                        selectionRangeSlider1.Visible = true;
-                        lowerBoundBox.Visible = true;
-                        currentPositionBox.Visible = true;
-                        upperBoundBox.Visible = true;
-                        unitLabelOne.Visible = true;
-                        unitLabelTwo.Visible = true;
-                        unitLabelThree.Visible = true;
-                        measureUnitButton.Enabled = true;
-                        freezeButton.Enabled = true;
-                        BtnToggleMode.Enabled = true;
-
-                        if (depthFrameReader.realKinectSet)
-                        {
-                            BtnToggleMode.Enabled = true;
-                            currentModeLabel.Visible = true;
-                        }
-
-                        fileLengthMS = depthFrameReader.getFileSizeInMS();
-                        selectionRangeSlider1.Max = fileLengthMS;
-                        selectionRangeSlider1.Min = 0;
-                        selectionRangeSlider1.SelectedMax = fileLengthMS;
-                        upperBoundBox.Text = transformMillisecondsToFrames(fileLengthMS).ToString();
-                        lowerBoundBox.Text = "0";
-                    }
-
-                    depthFrameReader.startStreaming(fps);
-
-                    updateGUItimer.Elapsed += invokeUpdateTimeBar;
-                    updateGUItimer.Start();
-
-                    firstStart = false;
+                    BtnToggleMode.Enabled = true;
+                    currentModeLabel.Visible = true;
                 }
 
-                currentlyStreaming = !currentlyStreaming;
-            }
-            else // solelyStreamLiveFrames
+                fileLengthMS = depthFrameReader.getFileSizeInMS();
+                selectionRangeSlider1.Max = fileLengthMS;
+                selectionRangeSlider1.Min = 0;
+                selectionRangeSlider1.SelectedMax = fileLengthMS;
+                upperBoundBox.Text = transformMillisecondsToFrames(fileLengthMS).ToString();
+                lowerBoundBox.Text = "0";
+
+                depthFrameReader.startStreaming(fps);
+
+                updateGUItimer.Elapsed += invokeUpdateTimeBar;
+                updateGUItimer.Start();
+
+                firstStart = false;
+            } 
+            else
             {
-                if (currentlyStreaming)
-                {
-                    toggleStreamButton.Text = "Start Streaming";
-                    depthFrameReader.pauseStreamingSolelyLiveFrames();
-                }
-                else
-                {
-                    toggleStreamButton.Text = "Pause Streaming";
-                    
-                    depthFrameReader.startStreamingSolelyLiveFrames(fps);
-                }
-
-                currentlyStreaming = !currentlyStreaming;
+                toggleStreamButton.Text = "Pause Streaming";
+                depthFrameReader.startStreamingSolelyLiveFrames(fps);
             }
+            currentlyStreaming = true;
             
         }
 
+        private void pausStreaming()
+        {
+            if (!solelyStreamLiveFrames)
+            {
+                toggleStreamButton.Text = "Start Streaming";
+                depthFrameReader.pauseStreamingByGUI();
+                updateGUItimer.Elapsed -= invokeUpdateTimeBar;
+                updateGUItimer.Stop();
+            }
+            else
+            {
+                toggleStreamButton.Text = "Start Streaming";
+                depthFrameReader.pauseStreamingSolelyLiveFrames();
+            }
+            currentlyStreaming = false;
+        }
 
         private void invokeUpdateTimeBar(object sender, EventArgs e)
         {
@@ -390,13 +389,8 @@ namespace KinectDummy
 
         private void BtnKinect_Click(object sender, EventArgs e)
         {
+            pausStreaming();
             changeDataSourceMode(DataSourceMode.REAL_KINECT);
-
-            BtnOnlyRecordedData.Visible = false;
-            BtnDataSources.Visible = false;
-            BtnAstraPro.Visible = false;
-            BtnKinect.Enabled = false;
-            
 
             solelyStreamLiveFrames = true;
             toggleStreamButton.Enabled = true;
@@ -405,15 +399,12 @@ namespace KinectDummy
 
         private void BtnDataSources_Click(object sender, EventArgs e)
         {
+            if (currentlyStreaming)
+                pausStreaming();
+
             changeDataSourceMode(DataSourceMode.RECORDED_DATA);
 
             openFileDialog();
-
-            BtnKinect.Visible = false;
-            BtnOnlyRecordedData.Visible = false;
-            BtnAstraPro.Visible = false;
-            BtnDataSources.Enabled = false;
-            
 
             BtnToggleMode.Visible = true;
             BtnToggleMode.Enabled = false;
@@ -423,14 +414,12 @@ namespace KinectDummy
 
         private void BtnOnlyRecordedData_Click(object sender, EventArgs e)
         {
+            if (currentlyStreaming)
+                pausStreaming();
+
             changeDataSourceMode(DataSourceMode.RECORDED_DATA);
 
             openFileDialog();
-
-            BtnKinect.Visible = false;
-            BtnDataSources.Visible = false;
-            BtnAstraPro.Visible = false;
-            BtnOnlyRecordedData.Enabled = false;
 
             depthFrameReader.setFrameSource(FrameSource.RECORDED);
             solelyStreamLiveFrames = false;
@@ -438,12 +427,10 @@ namespace KinectDummy
 
         private void BtnAstraPro_Click(object sender, EventArgs e)
         {
-            changeDataSourceMode(DataSourceMode.ASTRA_PRO);
+            if (currentlyStreaming)
+                pausStreaming();
 
-            BtnOnlyRecordedData.Visible = false;
-            BtnDataSources.Visible = false;
-            BtnKinect.Visible = false;
-            BtnAstraPro.Enabled = false;
+            changeDataSourceMode(DataSourceMode.ASTRA_PRO);
 
             solelyStreamLiveFrames = true;
             toggleStreamButton.Enabled = true;

@@ -63,6 +63,7 @@ namespace KinectDummy
         private Tuple<long, ushort[]> currentFrame;
 
         private long fileLengthMilliseconds;
+        private Thread readDataThread;
 
         private Microsoft.Kinect.KinectSensor realKinectSensor { get; } = null;
         private Microsoft.Kinect.DepthFrameReader realDepthFrameReader { get; } = null;
@@ -251,7 +252,22 @@ namespace KinectDummy
             detachEventsFromTimers();
             pauseStreamingRequested = true;
             currentlyDequeing = false;
+            initiallyStarted = false;
             IsPaused = true;
+
+            if (readDataThread != null)
+            {
+                readDataThread.Abort();
+                while (readDataThread.IsAlive) ;
+                readDataThread = null;
+            }
+                
+
+            if (streamReader != null)
+            {
+                streamReader.Close();
+                streamReader = null;
+            }
         }
 
         internal void startStreamingSolelyLiveFrames(int fps)
@@ -265,7 +281,8 @@ namespace KinectDummy
         internal void pauseStreamingSolelyLiveFrames()
         {
             frameArrivedTimer.Elapsed -= kickFrameArrivedEvent;
-            frameArrivedTimer.Stop();
+            if (frameArrivedTimer.IsRunning)
+                frameArrivedTimer.Stop();
             IsPaused = true;
         }
 
@@ -397,8 +414,11 @@ namespace KinectDummy
                 //Console.WriteLine("Already reading from file.");
                 return;
             }
-                
-            Thread readDataThread = new Thread(fillQueueFromFileLoop);
+
+            if (readDataThread != null)
+                readDataThread.Abort();
+
+            this.readDataThread = new Thread(fillQueueFromFileLoop);  
             readDataThread.Start();
         }
 
