@@ -51,6 +51,10 @@ namespace KinectDummy
             {
                 BtnKinect.Enabled = true;
                 BtnDataSources.Enabled = true;
+
+                // running kinect by default (if kinect available)
+                BtnKinect_Click(this, null);
+                toggleStreamButton_Click(this, null);
             }
         }
 
@@ -142,7 +146,8 @@ namespace KinectDummy
                 toggleStreamButton.Text = "Start Streaming";
                 depthFrameReader.pauseStreamingByGUI();
                 updateGUItimer.Elapsed -= invokeUpdateTimeBar;
-                updateGUItimer.Stop();
+                if (updateGUItimer.IsRunning)
+                    updateGUItimer.Stop();
             }
             else
             {

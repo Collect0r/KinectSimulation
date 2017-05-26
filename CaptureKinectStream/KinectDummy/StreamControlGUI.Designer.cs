@@ -214,11 +214,11 @@
             this.unitLabelThree.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.unitLabelThree.Visible = false;
             // 
-            // button1
+            // BtnToggleMode
             // 
             this.BtnToggleMode.Enabled = false;
             this.BtnToggleMode.Location = new System.Drawing.Point(155, 201);
-            this.BtnToggleMode.Name = "button1";
+            this.BtnToggleMode.Name = "BtnToggleMode";
             this.BtnToggleMode.Size = new System.Drawing.Size(102, 23);
             this.BtnToggleMode.TabIndex = 25;
             this.BtnToggleMode.Text = "Toggle Mode";
@@ -238,32 +238,33 @@
             this.currentModeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.currentModeLabel.Visible = false;
             // 
-            // onlyRealKinectButton
+            // BtnKinect
             // 
             this.BtnKinect.Enabled = false;
             this.BtnKinect.Location = new System.Drawing.Point(14, 75);
-            this.BtnKinect.Name = "onlyRealKinectButton";
+            this.BtnKinect.Name = "BtnKinect";
             this.BtnKinect.Size = new System.Drawing.Size(121, 101);
             this.BtnKinect.TabIndex = 29;
             this.BtnKinect.Text = "ONLY\r\nreal kinect";
             this.BtnKinect.UseVisualStyleBackColor = true;
             this.BtnKinect.Click += new System.EventHandler(this.BtnKinect_Click);
             // 
-            // bothDataSourcesButton
+            // BtnDataSources
             // 
             this.BtnDataSources.Enabled = false;
-            this.BtnDataSources.Location = new System.Drawing.Point(145, 75);
-            this.BtnDataSources.Name = "bothDataSourcesButton";
+            this.BtnDataSources.Location = new System.Drawing.Point(9, 187);
+            this.BtnDataSources.Name = "BtnDataSources";
             this.BtnDataSources.Size = new System.Drawing.Size(121, 101);
             this.BtnDataSources.TabIndex = 30;
             this.BtnDataSources.Text = "BOTH\r\nreal kinect + recorded";
             this.BtnDataSources.UseVisualStyleBackColor = true;
+            this.BtnDataSources.Visible = false;
             this.BtnDataSources.Click += new System.EventHandler(this.BtnDataSources_Click);
             // 
-            // onlyRecordedDataButton
+            // BtnOnlyRecordedData
             // 
             this.BtnOnlyRecordedData.Location = new System.Drawing.Point(276, 75);
-            this.BtnOnlyRecordedData.Name = "onlyRecordedDataButton";
+            this.BtnOnlyRecordedData.Name = "BtnOnlyRecordedData";
             this.BtnOnlyRecordedData.Size = new System.Drawing.Size(121, 101);
             this.BtnOnlyRecordedData.TabIndex = 31;
             this.BtnOnlyRecordedData.Text = "ONLY\r\nrecorded data";
@@ -290,9 +291,9 @@
             // 
             // BtnAstraPro
             // 
-            this.BtnAstraPro.Location = new System.Drawing.Point(13, 195);
+            this.BtnAstraPro.Location = new System.Drawing.Point(152, 75);
             this.BtnAstraPro.Name = "BtnAstraPro";
-            this.BtnAstraPro.Size = new System.Drawing.Size(108, 92);
+            this.BtnAstraPro.Size = new System.Drawing.Size(108, 101);
             this.BtnAstraPro.TabIndex = 32;
             this.BtnAstraPro.Text = "ONLY\r\nAstra Pro";
             this.BtnAstraPro.UseVisualStyleBackColor = true;

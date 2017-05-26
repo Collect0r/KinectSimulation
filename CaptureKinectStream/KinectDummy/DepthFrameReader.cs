@@ -186,7 +186,8 @@ namespace KinectDummy
 
             detachEventsFromTimers();
             
-            streamReader.Dispose();
+            if (streamReader != null)
+                streamReader.Dispose();
         }
 
         internal void changeFPS(int fps)
@@ -225,12 +226,14 @@ namespace KinectDummy
             if (dequeueFrameTimer != null)
             {
                 dequeueFrameTimer.Elapsed -= dequeueFrame;
-                dequeueFrameTimer.Stop();
+                if (dequeueFrameTimer.IsRunning)
+                    dequeueFrameTimer.Stop();
             }
             if (frameArrivedTimer != null)
             {
                 frameArrivedTimer.Elapsed -= kickFrameArrivedEvent;
-                frameArrivedTimer.Stop();
+                if (frameArrivedTimer.IsRunning)
+                    frameArrivedTimer.Stop();
             }
         }
 
