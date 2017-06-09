@@ -1,11 +1,7 @@
 ﻿using System;
-using Microsoft.Kinect;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using KinectDummy;
 
 namespace CaptureKinectStream
 {
@@ -38,12 +34,6 @@ namespace CaptureKinectStream
         }
 
         internal static void recordThisFrame(DepthFrame currentFrame)
-        {
-            if (captureController != null)
-                captureController.recordThisFrame(currentFrame);
-        }
-
-        internal static void recordThisFrame(KinectDummy.DepthFrame currentFrame)
         {
             if (captureController != null)
                 captureController.recordThisFrame(currentFrame);

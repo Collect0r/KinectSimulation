@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Kinect;
-//using KinectDummy;
-using System.Timers;
-using System.IO;
-using System.Threading;
+using KinectDummy;
 using System.Diagnostics;
 
 namespace CaptureKinectStream
@@ -74,7 +66,7 @@ namespace CaptureKinectStream
                 {
                     if (tempRealDepthFrame != null)
                     {
-                        tempRealDepthFrame.CopyFrameDataToArray(/*ref*/ depthFrameAsArray);
+                        tempRealDepthFrame.CopyFrameDataToArray(ref depthFrameAsArray);
                         DataStreamHandler.addFrameToQueue(depthFrameAsArray);
                     }
                     else
@@ -86,30 +78,6 @@ namespace CaptureKinectStream
         }
 
         private bool currentlyCapturing = false;
-
-        internal void recordThisFrame(DepthFrame currentFrame)
-        {
-            if (currentlyCapturing)
-            {
-                if (firstFrame)
-                {
-                    firstFrame = false;
-                    sw.Start();
-                }
-
-                // if secondsToCapture == 0 then the capturing stops only if the user clicks the stop-button
-                if (secondsToCapture > 0 && sw.ElapsedMilliseconds > 1000 * secondsToCapture)
-                {
-                    stopCapturing();
-                }
-                else
-                {
-                    currentFrame.CopyFrameDataToArray(/*ref*/ depthFrameAsArray);
-
-                    DataStreamHandler.addFrameToQueue(depthFrameAsArray);
-                }
-            }
-        }
 
         internal void recordThisFrame(KinectDummy.DepthFrame currentFrame)
         {

@@ -1,5 +1,4 @@
 ﻿//using KinectDummy;
-using Microsoft.Kinect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +12,6 @@ namespace CaptureKinectStream
         public static void startController()
         {
             GUIControl.startGUIParallel();
-        }
-
-        public static void recordKinectFrame(DepthFrame currentFrame)
-        {
-            GUIControl.recordThisFrame(currentFrame);
         }
 
         public static void recordDummyFrame(KinectDummy.DepthFrame currentFrame)
