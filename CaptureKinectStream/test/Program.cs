@@ -1,13 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using CaptureKinectStream;
-using System.IO;
-using System.Text;
-using KinectDummy;
-using System.Threading;
 
 namespace test
 {
