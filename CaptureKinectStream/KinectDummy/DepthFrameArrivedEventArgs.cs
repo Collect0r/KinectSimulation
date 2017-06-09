@@ -1,18 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KinectDummy
 {
+    public enum InputType { KINECT, ASTRA_PRO, RECORDED }
+
     public class DepthFrameArrivedEventArgs : EventArgs
     {
         public DepthFrameReference FrameReference { get; }
 
-        internal DepthFrameArrivedEventArgs(DepthFrame depthFrame)
+        public InputType InputDevice { get; }
+
+        internal DepthFrameArrivedEventArgs(DepthFrame depthFrame, InputType device)
         {
             FrameReference = new DepthFrameReference(depthFrame);
+            InputDevice = device;
         }
     }
 }

@@ -362,16 +362,16 @@ namespace KinectDummy
                 DepthFrameArrivedEventArgs depthEvent = null;
                 if (inputSource == FrameSource.KINECT && newRealFrame)
                 {
-                    depthEvent = new DepthFrameArrivedEventArgs(liveDepthFrame);
+                    depthEvent = new DepthFrameArrivedEventArgs(liveDepthFrame, InputType.KINECT);
                     newRealFrame = false;
                 }
                 else if (inputSource == FrameSource.RECORDED && currentDepthFrame != null) 
                 {
-                    depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame);
+                    depthEvent = new DepthFrameArrivedEventArgs(currentDepthFrame, InputType.RECORDED);
                 }
                 else if (inputSource == FrameSource.ASTRA_PRO)
                 {
-                    depthEvent = new DepthFrameArrivedEventArgs(astraAdapter.LastFrame);
+                    depthEvent = new DepthFrameArrivedEventArgs(astraAdapter.LastFrame, InputType.ASTRA_PRO);
                 }
 
                 currentlyProcessingFrameDataExternal = true;

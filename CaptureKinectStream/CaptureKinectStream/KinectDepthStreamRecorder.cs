@@ -15,12 +15,12 @@ namespace CaptureKinectStream
             GUIControl.startGUIParallel();
         }
 
-        public static void recordThisFrame(DepthFrame currentFrame)
+        public static void recordKinectFrame(DepthFrame currentFrame)
         {
             GUIControl.recordThisFrame(currentFrame);
         }
 
-        public static void recordThisFrame(KinectDummy.DepthFrame currentFrame)
+        public static void recordDummyFrame(KinectDummy.DepthFrame currentFrame)
         {
             GUIControl.recordThisFrame(currentFrame);
         }

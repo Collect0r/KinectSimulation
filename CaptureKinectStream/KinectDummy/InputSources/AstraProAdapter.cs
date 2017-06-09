@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace KinectDummy.InputSources
 {
@@ -40,9 +42,11 @@ namespace KinectDummy.InputSources
 
         public AstraProAdapter()
         {
-            // TcpListener server = new TcpListener(port);
             server = new TcpListener(LOCAL_ADDRESS, PORT);
+            //Thread.Sleep(4000);
+            //Process.Start(@"C:\Users\max\Downloads\AstraSDK-0.5.0-vs2015-win64\AstraSDK-0.5.0-20160426T102744Z-vs2015-win64\samples\vs2015\bin\Debug\DepthReaderEventCPP.exe");
         }
+
 
         /// <summary>
         /// Starts server and begins listening. Caution: should not be called from main thread! Will block otherwise.
