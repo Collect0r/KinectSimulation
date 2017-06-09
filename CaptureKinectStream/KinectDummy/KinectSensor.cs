@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KinectDummy
 {
@@ -16,16 +12,13 @@ namespace KinectDummy
 
         public EventHandler<IsAvailableChangedEventArgs> IsAvailableChanged;
 
-        private Microsoft.Kinect.KinectSensor realKinectSensor;
-
         internal static KinectSensor currentKinectSensorForInternalPurposes;
 
         internal KinectSensor()
         {
             try
             {
-                realKinectSensor = Microsoft.Kinect.KinectSensor.GetDefault();
-                DepthFrameSource = new DepthFrameSource(this, realKinectSensor);
+                DepthFrameSource = new DepthFrameSource(this);
             }
             catch (Exception e)
             {
@@ -36,14 +29,12 @@ namespace KinectDummy
 
         public void Open()
         {
-            if (realKinectSensor != null)
-                realKinectSensor.Open();
+            // just dummy method to keept the kinect API
         }
 
         public void Close()
         {
-            if (realKinectSensor != null)
-                realKinectSensor.Close();
+            // dummy method
         }
 
         public static KinectSensor GetDefault()

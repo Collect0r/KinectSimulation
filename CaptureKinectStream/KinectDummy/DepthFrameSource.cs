@@ -16,13 +16,6 @@ namespace KinectDummy
 
         private DepthFrameReader depthFrameReader;
 
-        internal DepthFrameSource(KinectSensor currentSensor, Microsoft.Kinect.KinectSensor realKinectSensor)
-        {
-            this.KinectSensor = currentSensor;
-            FrameDescription = new FrameDescription();
-            depthFrameReader = new DepthFrameReader(realKinectSensor);
-        }
-
         internal DepthFrameSource(KinectSensor currentSensor)
         {
             this.KinectSensor = currentSensor;

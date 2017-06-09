@@ -65,22 +65,11 @@ namespace KinectDummy
         private long fileLengthMilliseconds;
         private Thread readDataThread;
 
-        private Microsoft.Kinect.KinectSensor realKinectSensor { get; } = null;
-        private Microsoft.Kinect.DepthFrameReader realDepthFrameReader { get; } = null;
-
         private Thread astraAdapterThread;
         private AstraProAdapter astraAdapter = new AstraProAdapter();
 
         internal bool realKinectSet { get; } = false;
 
-        internal DepthFrameReader(Microsoft.Kinect.KinectSensor realKinectSensor) : this()
-        {
-            this.realKinectSensor = realKinectSensor;
-            realDepthFrameReader = realKinectSensor.DepthFrameSource.OpenReader();
-            realKinectSensor.Open();
-            realDepthFrameReader.FrameArrived += realFrameArrived;
-            realKinectSet = true;
-        }
 
         internal DepthFrameReader()
         {
@@ -99,6 +88,7 @@ namespace KinectDummy
             // starting the astra pro server socket. will wait for connections. TODO: start astra pro sender as process
             astraAdapterThread = new Thread(astraAdapter.run);
             astraAdapterThread.Start();
+            realKinectSet = false;
         }
 
         internal void setRepeatingInterval(long lowerBoundMS, long upperBoundMS)
@@ -383,24 +373,6 @@ namespace KinectDummy
             }
         }
 
-        internal void realFrameArrived(object sender, Microsoft.Kinect.DepthFrameArrivedEventArgs e)
-        {
-            if (inputSource == FrameSource.KINECT)
-            {
-                using (Microsoft.Kinect.DepthFrame tempRealDepthFrame = realDepthFrameReader.AcquireLatestFrame())
-                {
-                    if (tempRealDepthFrame != null)
-                    {
-                        if (!freezeCurrentFrame)
-                        {
-                            tempRealDepthFrame.CopyFrameDataToArray(realFrameDataAsArray);
-                            liveDepthFrame = new DepthFrame(realFrameDataAsArray);
-                        }
-                        newRealFrame = true;
-                    }
-                }
-            }
-        }
         
         public DepthFrame AcquireLatestFrame()
         {
